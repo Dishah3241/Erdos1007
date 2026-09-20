@@ -44,10 +44,15 @@ automation:
   methods:
     - "AI-assisted"
   detail: >-
-    Statement authored independently by two models of different lineages and checked for
-    equivalence in Lean; proof discharged by coding agents under the gate suite in this
-    repository; human review confined to the definitions and target statements identified by
-    the semantic-review list. See AGENTS.md and ../../docs/PLAYBOOK.md.
+    The formal statement was not authored here. It reproduces a declaration of
+    google-deepmind/formal-conjectures, which carries that project's own review, with its two
+    supporting definitions inlined so the file depends on Mathlib alone; the inlining was done by
+    Claude Opus 5 and expands a notation to its definition without other change. An adversarial
+    review of the inlined statement was run on a model of a different lineage (gpt-5.6-sol) and
+    its findings are recorded in the repository history. Candidate selection was assisted by a
+    literature-triage agent (zai/glm-5.3-flash), whose retrieval receipts are in
+    ../../docs/triage-results.md. Proof work has not begun. See AGENTS.md and
+    ../../docs/PLAYBOOK.md.
 
 limitations: >-
   Stage 1 only: the statement is frozen and Challenge.lean is generated from it,
