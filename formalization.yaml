@@ -1,0 +1,59 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/mathlib-initiative/formalization.yaml/main/schema/formalization.schema.json
+version: "v0.4"
+
+project:
+  name: "Unit-distance graphs of dimension four with nine edges"
+  description: >-
+    Any two distinct elements of `{2, 3, 5}` are coprime.
+  authors:
+    - "Dishant Shah"
+  license: "Apache-2.0"
+  responsible_maintainers:
+    - "Dishant Shah"
+
+classification:
+  arxiv: ["math.CO", "math.MG"]
+  msc2020: ["05C62", "52C10"]
+
+sources:
+  - title: "Dimension 4 and dimension 5 graphs with minimum edge set"
+    authors:
+      - "Joe Chaffee"
+      - "Matt Noble"
+    id: "https://ajc.maths.uq.edu.au/pdf/64/ajc_v64_p327.pdf"
+    type: "paper"
+    location: "Australasian Journal of Combinatorics 64(2) (2016), 327-333, Theorem 7"
+    relationship: "formalizes"
+    note: >-
+      The published proof this formalization certifies. Cited at its exact pinpoint, not at the
+      paper as a whole.
+  - title: "Formal Conjectures"
+    authors:
+      - "The Formal Conjectures Authors"
+    id: "https://github.com/google-deepmind/formal-conjectures"
+    type: "other"
+    location: "FormalConjectures/ErdosProblems/1007.lean, declaration erdos_1007.variants.dimension_four_extremal"
+    relationship: "background"
+    note: >-
+      The formal statement originates here and carries that project's review. Any deviation from
+      the upstream statement is recorded under `limitations` below.
+
+automation:
+  # Declared honestly on every entry from this workspace. Only 3 of Palomar's first 36 entries
+  # disclosed AI assistance; understating it would make the registry less useful than it should be.
+  methods:
+    - "AI-assisted"
+  detail: >-
+    Statement authored independently by two models of different lineages and checked for
+    equivalence in Lean; proof discharged by coding agents under the gate suite in this
+    repository; human review confined to the definitions and target statements identified by
+    the semantic-review list. See AGENTS.md and ../../docs/PLAYBOOK.md.
+
+limitations: >-
+  Stage 1 only: the statement is frozen and Challenge.lean is generated from it,
+  but no proof is discharged. The repository does not build. Nothing here is proved.
+
+review:
+  status: "in-progress"
+  note: >-
+    Statement frozen and adversarially reviewed; proof not started.

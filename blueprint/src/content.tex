@@ -1,0 +1,35 @@
+% The actual content of the blueprint, used by both the web and print versions.
+% Do not include \begin{document}.
+%
+% Each node carries:
+%   \lean{Full.Declaration.Name}  the Lean declaration this node IS
+%   \leanok                        this node is fully formalized
+%   \uses{label, ...}              its immediate dependencies
+%
+% `leanblueprint checkdecls` verifies every \lean{...} names a declaration that actually exists
+% in the built project. That check is what keeps this document from drifting away from the Lean,
+% so never write a \lean{} you have not built, and run it before every push.
+
+\chapter{Unit-distance graphs of dimension four with nine edges}
+
+\begin{definition}[Pairwise coprimality]
+  \label{def:pairwise-coprime}
+  \lean{Erdos1007.Standalone.Mathlib.PairwiseCoprime}
+  \leanok
+  A finite set of naturals is \emph{pairwise coprime} when any two distinct elements are coprime.
+\end{definition}
+
+\begin{lemma}[Small primes are pairwise coprime]
+  \label{lem:small-primes-coprime}
+  \lean{Erdos1007.Standalone.Mathlib.SmallPrimesCoprime}
+  \leanok
+  \uses{def:pairwise-coprime}
+  The set $\{2, 3, 5\}$ is pairwise coprime.
+\end{lemma}
+
+\begin{proof}
+  \leanok
+  \uses{def:pairwise-coprime}
+  Each pair is distinct and shares no prime factor, so the claim is decidable and holds by
+  computation.
+\end{proof}

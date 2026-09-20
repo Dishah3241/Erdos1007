@@ -1,0 +1,160 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Installs the toolchain named by `lean-toolchain`, resolves dependencies, and hydrates
+      # Mathlib from its own artifact cache. `build: false` stops there so project build artifacts
+      # can be restored before the build runs.
+      - name: Toolchain and dependencies
+        uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9
+        with:
+          auto-config: false
+          build: false
+          use-github-cache: false
+          use-mathlib-cache: true
+
+      # Lake keys every artifact by a trace over its module's source and its imports' traces, so a
+      # restored olean is reused only when everything it transitively depends on hashes identically.
+      # The key covers what changes elaboration from outside the source tree: compiler, dependency
+      # revisions, and lakefile.toml (which carries warningAsError and the linter set). The source
+      # tree is not in the key -- Lake's traces decide per module, and `restore-keys` allows a
+      # partial hit. Mathlib comes from its own cache above; several GB through the Actions cache
+      # would cost more than it saves.
+      - name: Restore build artifacts
+        id: restore-build
+        uses: actions/cache/restore@v4
+        with:
+          path: .lake/build
+          key: lake-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lakefile.toml', 'lake-manifest.json') }}-${{ github.sha }}
+          restore-keys: |
+            lake-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lakefile.toml', 'lake-manifest.json') }}-
+
+      # Runs BEFORE the build: a drifted statement must fail fast, not after an hour of Lean.
+      - name: Palomar Challenge drift audit
+        run: scripts/check-palomar-challenge.sh
+
+      # A gate in its own right. `warningAsError = true` makes `sorry` a build failure, and the
+      # authoritative glob elaborates every module including orphans.
+      - name: Build
+        run: |
+          echo "::group::Lake Build Output"
+          lake build
+          echo "::endgroup::"
+
+      # Save as soon as compilation succeeds. A later audit failure must not discard a valid
+      # hour-long build; Lake's traces reject stale artifacts on the next run anyway.
+      - name: Save build artifacts
+        if: steps.restore-build.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: .lake/build
+          key: lake-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lakefile.toml', 'lake-manifest.json') }}-${{ github.sha }}
+
+      - name: Palomar comparator compatibility audit
+        run: lake exe palomar-compatibility
+
+      # Every declaration reduces to propext, Classical.choice, Quot.sound. No sorry, direct or
+      # transitive, in any statement or proof.
+      - name: Axiom audit
+        run: lake exe axioms
+
+      # Anti-vacuity: every closed claim has a satisfiability witness and every definition a
+      # separating example. Catches what axiom-cleanliness cannot.
+      - name: Fidelity audit
+        run: lake exe fidelity
+
+      - name: Module system audit
+        run: lake exe module-system
+
+      - name: Standalone Mathlib audit
+        run: lake exe standalone-mathlib
+
+      - name: Isolated-claim proof audit
+        run: lake exe proof-links
+
+      - name: Style audit
+        run: lake exe style
+
+      - name: Documentation audit
+        run: lake exe documentation
+
+      - name: Layering audit
+        run: lake exe layering
+
+      # Mathlib's environment linters over every declaration, parsed fail-closed against the
+      # grandfathered baseline; `@[nolint]` uses must be allowlisted.
+      - name: Environment lint
+        run: scripts/lint-env.sh
+
+      # An audit that inspects nothing passes every commit. Each probe is a defect the
+      # corresponding audit must reject, and the failure must name that probe. Runs last, after
+      # the real audits have passed on the unmodified tree.
+      - name: Audits reject what they claim to reject
+        run: scripts/audit-probes.sh
+
+  # The blueprint is a parallel document and can drift from the Lean. `checkdecls` verifies every
+  # \lean{...} names a declaration that actually exists in the built project. It cannot catch prose
+  # that misdescribes a declaration that does exist -- that residue is on the semantic-review list.
+  blueprint:
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Toolchain and dependencies
+        uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9
+        with:
+          auto-config: false
+          build: false
+          use-github-cache: false
+          use-mathlib-cache: true
+
+      - name: Restore build artifacts
+        uses: actions/cache/restore@v4
+        with:
+          path: .lake/build
+          key: lake-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lakefile.toml', 'lake-manifest.json') }}-${{ github.sha }}
+          restore-keys: |
+            lake-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lakefile.toml', 'lake-manifest.json') }}-
+
+      - name: Blueprint dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y graphviz libgraphviz-dev texlive-xetex texlive-latex-extra
+          pip install leanblueprint
+
+      - name: Build blueprint
+        run: leanblueprint all
+
+      # Runs after the build so the declaration list reflects the checked commit.
+      - name: Blueprint declarations exist
+        run: leanblueprint checkdecls
+
+      - name: Upload blueprint PDF
+        uses: actions/upload-artifact@v4
+        with:
+          name: blueprint-${{ github.sha }}
+          path: blueprint/print/print.pdf
+          if-no-files-found: warn
