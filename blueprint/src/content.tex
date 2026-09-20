@@ -1,35 +1,200 @@
-% The actual content of the blueprint, used by both the web and print versions.
-% Do not include \begin{document}.
+% Blueprint for the extremal half of Erdős problem 1007.
 %
-% Each node carries:
-%   \lean{Full.Declaration.Name}  the Lean declaration this node IS
-%   \leanok                        this node is fully formalized
-%   \uses{label, ...}              its immediate dependencies
+% Every node below is grounded in Chaffee and Noble, "Dimension 4 and dimension 5 graphs with
+% minimum edge set", Australas. J. Combin. 64(2) (2016), 327-333, read in full from
+% https://ajc.maths.uq.edu.au/pdf/64/ajc_v64_p327.pdf. Citations are to that paper's own numbering.
+% Where a node has no counterpart in the paper it is marked GAP and says what the paper omits.
 %
-% `leanblueprint checkdecls` verifies every \lean{...} names a declaration that actually exists
-% in the built project. That check is what keeps this document from drifting away from the Lean,
-% so never write a \lean{} you have not built, and run it before every push.
+% `\lean{...}` names a declaration that must exist; `leanblueprint checkdecls` verifies it.
+% Never write a `\lean{}` for a declaration that has not been built.
 
-\chapter{Unit-distance graphs of dimension four with nine edges}
+\chapter{A dimension four graph with nine edges is \texorpdfstring{$K_{3,3}$}{K33}}
 
-\begin{definition}[Pairwise coprimality]
-  \label{def:pairwise-coprime}
-  \lean{Erdos1007.Standalone.Mathlib.PairwiseCoprime}
+\section{Definitions}
+
+\begin{definition}[Unit-distance representation]
+  \label{def:representable}
+  \lean{Erdos1007.Standalone.Mathlib.InlineErdos1007.UnitDistanceEmbeddable}
   \leanok
-  A finite set of naturals is \emph{pairwise coprime} when any two distinct elements are coprime.
+  A graph $G$ is \emph{representable in $\mathbb{R}^n$} when there is an injective
+  $f : V(G) \to \mathbb{R}^n$ with $\lVert f(u) - f(v)\rVert = 1$ for every edge $uv$.
+  Non-adjacent vertices are unconstrained: they may also lie at distance one.
 \end{definition}
 
-\begin{lemma}[Small primes are pairwise coprime]
-  \label{lem:small-primes-coprime}
-  \lean{Erdos1007.Standalone.Mathlib.SmallPrimesCoprime}
+\begin{definition}[Dimension]
+  \label{def:dimension}
+  \lean{Erdos1007.Standalone.Mathlib.InlineErdos1007.HasDimension}
   \leanok
-  \uses{def:pairwise-coprime}
-  The set $\{2, 3, 5\}$ is pairwise coprime.
+  \uses{def:representable}
+  $\dim(G) = n$ when $n$ is \emph{least} such that $G$ is representable in $\mathbb{R}^n$.
+\end{definition}
+
+\section{Imported results}
+
+Chaffee--Noble import these from Erd\H{o}s, Harary and Tutte, \emph{On the dimension of a graph},
+Mathematika \textbf{12} (1965), 118--122, and use them without proof. Only the three below are
+needed here. They are obligations of this development, not givens.
+
+\begin{lemma}[Monotonicity; EHT via Chaffee--Noble Lemma 4]
+  \label{lem:monotone}
+  If $H$ is a subgraph of $G$ then $\dim(H) \le \dim(G)$.
 \end{lemma}
 
+\begin{lemma}[$\dim(K_n - e) = n - 2$; EHT via Chaffee--Noble Lemma 2]
+  \label{lem:kn-minus-e}
+  Only the instance $\dim(K_5 - e) = 3$ is used, and only the upper bound $\le 3$.
+\end{lemma}
+
+\begin{lemma}[$\dim(K_{3,3}) = 4$; EHT via Chaffee--Noble Lemma 3]
+  \label{lem:k33-dim}
+  \uses{def:dimension}
+  Both halves are needed and neither is quoted in Chaffee--Noble.
+
+  \emph{Upper bound.} With $r = 1/\sqrt{2}$, the parts
+  $\{(r,0,0,0), (-r,0,0,0), (0,r,0,0)\}$ and $\{(0,0,r,0), (0,0,-r,0), (0,0,0,r)\}$ give six
+  distinct points whose nine cross-distances are all one.
+
+  \emph{Lower bound.} Suppose $K_{3,3}$ were representable in $\mathbb{R}^3$ with parts $A, B$.
+  Each $b \in B$ lies on all three unit spheres centred at the points of $A$. If those centres are
+  non-collinear the three spheres meet in at most two points, so three distinct elements of $B$
+  cannot all lie there. If they are collinear and distinct, a common point would lie on two
+  distinct parallel bisector planes, which is impossible. Either way $\lvert B\rvert \le 2$.
+\end{lemma}
+
+\section{Minimum degree}
+
+\begin{lemma}[Few edges force dimension at most three]
+  \label{lem:eight-edges}
+  \uses{def:dimension, lem:monotone, lem:kn-minus-e}
+  Every graph with at most eight edges has dimension at most three.
+
+  This is the content of Chaffee--Noble Theorem 6. Take $G$ with $\dim(G) > 3$ and $|E(G)|$
+  minimum, and suppose $|E(G)| \le 8$. Minimality excludes a vertex of degree one. It also
+  excludes a vertex $u$ of degree two: writing $uv_1, uv_2$ for its edges, set
+  $V(G') = V(G)\setminus\{u\}$ and $E(G') = (E(G)\setminus\{uv_1,uv_2\})\cup\{v_1v_2\}$. Then
+  $|E(G')| < |E(G)|$, so $G'$ embeds in $\mathbb{R}^3$; there $v_1$ and $v_2$ are at distance one,
+  so the unit spheres about them meet in a circle, and any point of that circle serves as $u$.
+  That embeds a supergraph of $G$, so $\dim(G) \le 3$ by Lemma~\ref{lem:monotone}.
+
+  Adding edges until $|E(H)| = 8$ with every degree at least three, the degree sum is sixteen, so
+  the degree sequence is $(4,3,3,3,3)$; hence $H \subseteq K_5 - e$ and
+  $\dim(H) \le 3$ by Lemmas~\ref{lem:kn-minus-e} and~\ref{lem:monotone}.
+\end{lemma}
+
+\begin{lemma}[Minimum degree three]
+  \label{lem:min-degree}
+  \uses{lem:eight-edges, lem:monotone}
+  If $\dim(G) = 4$ and $|E(G)| = 9$ then every vertex of $G$ has degree at least three.
+
+  Chaffee--Noble discharge this in Theorem 7 with the phrase ``by the arguments in the preceding
+  theorem''. Deleting a vertex of degree at most two leaves at most seven edges, so
+  Lemma~\ref{lem:eight-edges} applies and the re-placement argument of
+  Lemma~\ref{lem:eight-edges} puts $G$ in $\mathbb{R}^3$.
+\end{lemma}
+
+\section{Bounding the vertex count}
+
+\begin{lemma}[At least five vertices]
+  \label{lem:at-least-five}
+  A graph with nine edges has at least five vertices, since $K_4$ has only six.
+\end{lemma}
+
+\begin{lemma}[At most six vertices]
+  \label{lem:at-most-six}
+  \uses{lem:min-degree}
+  If every degree is at least three and $|E(G)| = 9$ then $|V(G)| \le 6$, because
+  $3\lvert V(G)\rvert \le \sum_{v} \deg v = 2\lvert E(G)\rvert = 18$.
+
+  \textbf{GAP.} This step does not appear in Chaffee--Noble. The paper establishes the lower bound
+  on $|V|$ and then treats five and six vertices as the only cases, without saying why larger
+  vertex counts are excluded. The handshake bound above supplies it. Any development that claims
+  to follow the paper step by step must insert this.
+\end{lemma}
+
+\section{The five-vertex case}
+
+\begin{lemma}[Five vertices is impossible]
+  \label{lem:five-vertices}
+  \uses{lem:min-degree, lem:kn-minus-e, lem:monotone}
+  There is no $G$ with $\dim(G) = 4$, $|E(G)| = 9$ and $|V(G)| = 5$.
+
+  Degrees lie between three and four, and the degree sum is eighteen, forcing $(4,4,4,3,3)$.
+  Chaffee--Noble assert that this sequence ``corresponds solely to the graph $K_5 - e$''; that
+  uniqueness is stated without argument and must be proved here. Then
+  $\dim(K_5 - e) = 3$ contradicts $\dim(G) = 4$.
+\end{lemma}
+
+\section{The six-vertex case}
+
+\begin{lemma}[Two-regular graphs on six vertices]
+  \label{lem:two-regular-six}
+  A two-regular graph on six vertices is isomorphic to $C_6$ or to $K_3 \sqcup K_3$.
+
+  Chaffee--Noble state this as evident. It is the combinatorial core of the formalization and has
+  no ready route in Mathlib.
+\end{lemma}
+
+\begin{lemma}[The prism embeds in the plane]
+  \label{lem:prism-planar}
+  \uses{def:representable}
+  The complement of $C_6$ is representable in $\mathbb{R}^2$, hence has dimension at most two.
+
+  Chaffee--Noble give the placement
+  $(0,0),\ (1,0),\ (0,1),\ (1,1),\ (\tfrac12, \tfrac{\sqrt3}{2}),\ (\tfrac12, 1 + \tfrac{\sqrt3}{2})$.
+  Labelling these $A,B,C,D,E,F$, the nine unit distances are $AB, CD, AC, BD, AE, BE, CF, DF, EF$:
+  triangles $ABE$ and $CDF$ joined by the matching $AC, BD, EF$, which is the triangular prism.
+  Verified by direct computation against the paper.
+\end{lemma}
+
+\begin{lemma}[Six vertices forces $K_{3,3}$]
+  \label{lem:six-vertices}
+  \uses{lem:min-degree, lem:two-regular-six, lem:prism-planar}
+  If $\dim(G) = 4$, $|E(G)| = 9$ and $|V(G)| = 6$ then $G \cong K_{3,3}$.
+
+  Minimum degree three and degree sum eighteen force three-regularity, so the complement is
+  two-regular. By Lemma~\ref{lem:two-regular-six} the complement is $C_6$ or $K_3 \sqcup K_3$. The
+  first makes $G$ the prism, of dimension at most two by Lemma~\ref{lem:prism-planar},
+  contradicting $\dim(G) = 4$. The second makes $G$ exactly $K_{3,3}$.
+\end{lemma}
+
+\section{The target}
+
+\begin{theorem}[Chaffee--Noble, Theorem 7]
+  \label{thm:target}
+  \lean{Erdos1007.Standalone.Mathlib.InlineErdos1007.DimensionFourExtremal}
+  \uses{lem:min-degree, lem:at-least-five, lem:at-most-six, lem:five-vertices, lem:six-vertices}
+  A graph of dimension four with nine edges and no isolated vertex is isomorphic to $K_{3,3}$.
+\end{theorem}
+
 \begin{proof}
-  \leanok
-  \uses{def:pairwise-coprime}
-  Each pair is distinct and shares no prime factor, so the claim is decidable and holds by
-  computation.
+  \uses{lem:min-degree, lem:at-least-five, lem:at-most-six, lem:five-vertices, lem:six-vertices}
+  Lemma~\ref{lem:min-degree} gives minimum degree three, so
+  Lemmas~\ref{lem:at-least-five} and~\ref{lem:at-most-six} leave five or six vertices.
+  Lemma~\ref{lem:five-vertices} excludes five and Lemma~\ref{lem:six-vertices} settles six.
 \end{proof}
+
+\begin{theorem}[The statement is not vacuous]
+  \label{thm:witness}
+  \lean{Erdos1007.Standalone.Mathlib.InlineErdos1007.DimensionFourExtremal.witness}
+  \uses{lem:k33-dim}
+  Some graph has dimension four, nine edges and no isolated vertex, namely $K_{3,3}$ by
+  Lemma~\ref{lem:k33-dim}.
+\end{theorem}
+
+\section{Separating examples}
+
+\begin{theorem}[Representation does not constrain non-edges]
+  \label{thm:sep-representable}
+  \lean{Erdos1007.Standalone.Mathlib.InlineErdos1007.UnitDistanceEmbeddable.separating}
+  \uses{def:representable}
+  Some placement satisfying Definition~\ref{def:representable} puts a non-edge at distance one:
+  send an edge to $0, 1$ and a third vertex to $2$ in $\mathbb{R}^1$.
+\end{theorem}
+
+\begin{theorem}[Leastness is not membership]
+  \label{thm:sep-dimension}
+  \lean{Erdos1007.Standalone.Mathlib.InlineErdos1007.HasDimension.separating}
+  \uses{def:dimension}
+  Some graph with an edge is representable in $\mathbb{R}^4$ without having dimension four, namely
+  $K_2$, of dimension one. The edge is required: the empty graph would satisfy this degenerately.
+\end{theorem}
