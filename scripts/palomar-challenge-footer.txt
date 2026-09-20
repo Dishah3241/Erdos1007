@@ -1,0 +1,10 @@
+
+namespace Erdos1007.Palomar
+
+set_option warningAsError false in
+/-- A graph of dimension four with nine edges and no isolated vertex is `K₃,₃`. -/
+theorem target :
+    Erdos1007.Standalone.Mathlib.InlineErdos1007.DimensionFourExtremal := by
+  sorry
+
+end Erdos1007.Palomar
