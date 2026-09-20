@@ -52,20 +52,23 @@ def UnitDistanceEmbeddable {V : Type*} (G : SimpleGraph V) (n : ℕ) : Prop :=
 /-- Separating example for `UnitDistanceEmbeddable`, required by `lake exe fidelity`.
 
 The nearest plausible wrong definition adds `∀ u v, dist (f u) (f v) = 1 → G.Adj u v`, turning a
-representation into a unit-distance graph. This asserts a graph and a dimension satisfying the
-definition as stated while **no** placement witnesses the stricter reading, so the two notions are
-genuinely separated. Without it a development could silently prove the stricter theorem, which is
-a different and stronger claim than the source makes.
+representation into a unit-distance graph. This exhibits a placement that satisfies the definition
+as written while putting a **non-edge** at distance one, so the definition demonstrably does not
+constrain non-adjacent vertices. Without it a development could silently prove the stricter
+theorem, which is a different and stronger claim than the source makes.
 
-A single edge in `ℝ¹` separates them: `K₂` is representable, while any placement of its two
-vertices at distance one also has them adjacent — so the witness needs a non-edge at distance one,
-which `K₂` plus an isolated vertex supplies in `ℝ¹`. -/
+An edge plus a third vertex in `ℝ¹` does it: send the edge to `0, 1` and the third vertex to `2`.
+Every edge is a unit segment and the non-edge between the second and third vertices is also a unit
+segment.
+
+An earlier version of this asserted instead that **no** placement satisfies the stricter reading.
+That was wrong, and an adversarial review kernel-checked the refutation: placing the third vertex
+at `3` instead satisfies the stricter reading too. Non-existence of a strict placement is a much
+stronger and harder claim, and it is not what separating the definitions requires. -/
 def UnitDistanceEmbeddable.separating : Prop :=
-  ∃ (V : Type) (G : SimpleGraph V) (n : ℕ),
-    UnitDistanceEmbeddable G n ∧
-      ¬ ∃ f : V → EuclideanSpace ℝ (Fin n), Function.Injective f ∧
-          (∀ u v : V, G.Adj u v → dist (f u) (f v) = 1) ∧
-          (∀ u v : V, dist (f u) (f v) = 1 → G.Adj u v)
+  ∃ (V : Type) (G : SimpleGraph V) (n : ℕ) (f : V → EuclideanSpace ℝ (Fin n)),
+    Function.Injective f ∧ (∀ u v : V, G.Adj u v → dist (f u) (f v) = 1) ∧
+      ∃ u v : V, u ≠ v ∧ ¬ G.Adj u v ∧ dist (f u) (f v) = 1
 
 /-- `G` has dimension `n`: the least `m` admitting a unit-distance representation of `G` in `ℝᵐ`.
 
@@ -79,10 +82,16 @@ def HasDimension {V : Type*} (G : SimpleGraph V) (n : ℕ) : Prop :=
 
 The nearest plausible wrong definition is membership in place of leastness: `G` is representable
 in `ℝⁿ`. This asserts a graph representable in `ℝ⁴` that does not have dimension four, separating
-the two. -/
+the two.
+
+The edge is required because without it the empty graph satisfies this degenerately — it is
+representable in every dimension and has dimension zero — which an adversarial review
+kernel-checked. A separating example that only the empty object witnesses establishes nothing
+about the definition, so this demands a graph with an edge. `K₂` is the intended witness:
+representable in `ℝ⁴`, of dimension one. -/
 def HasDimension.separating : Prop :=
   ∃ (V : Type) (G : SimpleGraph V),
-    UnitDistanceEmbeddable G 4 ∧ ¬ HasDimension G 4
+    (∃ u v : V, G.Adj u v) ∧ UnitDistanceEmbeddable G 4 ∧ ¬ HasDimension G 4
 
 /-- **Erdős problem 1007, extremal half.** A graph of dimension four with nine edges and no
 isolated vertex is `K₃,₃`.
