@@ -10,7 +10,7 @@ This repository targets the "only by `K₃,₃`" half.
 
 | | |
 |---|---|
-| Stage | **1 — statement frozen** |
+| Stage | **2 — blueprint written**; Compass sign-off pending ([`docs/compass.md`](docs/compass.md)) |
 | Builds | **No, by design.** See below. |
 | Palomar entry | not submitted |
 | `formal_proof` PR | not opened |
@@ -24,8 +24,8 @@ statement and nothing else.
 
 `InlineErdos1007Proof.lean` and `Solution.lean` do **not** compile: every proof is `sorry`, and
 `warningAsError = true` makes that a hard error. `lake build` fails. **Nothing in this repository
-is proved.** That is the accurate state of a Stage 1 project and it is not a defect to be worked
-around — see `../../docs/PLAYBOOK.md`.
+is proved.** That is the accurate state of a project before Stage 3 finishes, and it is not a
+defect to be worked around — see `../../docs/PLAYBOOK.md`.
 
 ## Source
 
@@ -53,8 +53,9 @@ edges*, Discrete Math. **313(18)** (2013), 1783–1789, which is paywalled and w
 4. `|V| = 6` is three-regular; its complement is `C₆` (the prism, which embeds in `ℝ²`, a
    contradiction) or `K₃ ⊔ K₃`, giving `K₃,₃`.
 
-Five results are imported from Erdős, Harary and Tutte, *On the dimension of a graph*, Mathematika
-**12** (1965), 118–122.
+Chaffee–Noble import four results (their Lemmas 1–4) from Erdős, Harary and Tutte, *On the
+dimension of a graph*, Mathematika **12** (1965), 118–122; three of them are needed here. The
+blueprint in `blueprint/src/content.tex` has the full dependency graph.
 
 ## Prior formalization
 

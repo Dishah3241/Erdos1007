@@ -38,6 +38,9 @@ needed here. They are obligations of this development, not givens.
 \begin{lemma}[Monotonicity; EHT via Chaffee--Noble Lemma 4]
   \label{lem:monotone}
   If $H$ is a subgraph of $G$ then $\dim(H) \le \dim(G)$.
+
+  It is used here in the more basic form it follows from: a representation of $G$ in
+  $\mathbb{R}^n$ restricts to a representation of any subgraph $H$ in $\mathbb{R}^n$.
 \end{lemma}
 
 \begin{lemma}[$\dim(K_n - e) = n - 2$; EHT via Chaffee--Noble Lemma 2]
@@ -63,33 +66,59 @@ needed here. They are obligations of this development, not givens.
 
 \section{Minimum degree}
 
-\begin{lemma}[Few edges force dimension at most three]
+\begin{lemma}[Re-attaching a vertex of degree at most two]
+  \label{lem:reattach}
+  \uses{def:representable, lem:monotone}
+  Let $u$ be a vertex of $G$ of degree at most two, and let $G'$ be $G - u$ with an edge added
+  between the two neighbours of $u$ when $u$ has two. If $G'$ is representable in $\mathbb{R}^3$
+  then so is $G$.
+
+  Extend a representation of $G'$ by a point for $u$ that avoids the finitely many points already
+  used, which keeps the placement injective. Degree zero: any point. Degree one, neighbour $v$:
+  any point of the unit sphere about $v$. Degree two, neighbours $v_1, v_2$: these are at distance
+  one in $G'$, so the unit spheres about them meet in a circle of radius $\sqrt3/2$, and any point
+  of it serves. Each choice is from an infinite set. The result represents $G$ together with the
+  edge $v_1v_2$, hence $G$ by Lemma~\ref{lem:monotone}.
+
+  This is the argument of Chaffee--Noble Theorem 6, which gives it for degree two and calls degree
+  one obvious. The paper does not treat degree zero or say why the new point can avoid the others.
+\end{lemma}
+
+\begin{lemma}[At most eight edges are representable in \texorpdfstring{$\mathbb{R}^3$}{R3}]
   \label{lem:eight-edges}
-  \uses{def:dimension, lem:monotone, lem:kn-minus-e}
-  Every graph with at most eight edges has dimension at most three.
+  \uses{lem:reattach, lem:monotone, lem:kn-minus-e}
+  Every finite graph with at most eight edges is representable in $\mathbb{R}^3$.
 
-  This is the content of Chaffee--Noble Theorem 6. Take $G$ with $\dim(G) > 3$ and $|E(G)|$
-  minimum, and suppose $|E(G)| \le 8$. Minimality excludes a vertex of degree one. It also
-  excludes a vertex $u$ of degree two: writing $uv_1, uv_2$ for its edges, set
-  $V(G') = V(G)\setminus\{u\}$ and $E(G') = (E(G)\setminus\{uv_1,uv_2\})\cup\{v_1v_2\}$. Then
-  $|E(G')| < |E(G)|$, so $G'$ embeds in $\mathbb{R}^3$; there $v_1$ and $v_2$ are at distance one,
-  so the unit spheres about them meet in a circle, and any point of that circle serves as $u$.
-  That embeds a supergraph of $G$, so $\dim(G) \le 3$ by Lemma~\ref{lem:monotone}.
+  This is the content of Chaffee--Noble Theorem 6. Take a counterexample $G$ with
+  $|E(G)| + |V(G)|$ minimum. A vertex $u$ of degree at most two is excluded by
+  Lemma~\ref{lem:reattach}: $G'$ has fewer vertices and no more edges, so it is representable by
+  minimality. Hence every degree is at least three, which forces
+  $3\lvert V(G)\rvert \le 2\lvert E(G)\rvert \le 16$, so $|V(G)| \le 5$, and $|V(G)| \ge 4$ since
+  a vertex has three neighbours.
 
-  Adding edges until $|E(H)| = 8$ with every degree at least three, the degree sum is sixteen, so
-  the degree sequence is $(4,3,3,3,3)$; hence $H \subseteq K_5 - e$ and
-  $\dim(H) \le 3$ by Lemmas~\ref{lem:kn-minus-e} and~\ref{lem:monotone}.
+  If $|V(G)| = 4$ then $G = K_4$. If $|V(G)| = 5$, the degree sum is at least fifteen, even and at
+  most sixteen, so it is sixteen and the degree sequence is $(4,3,3,3,3)$; the complement then has
+  two disjoint edges. Either way $G$ is a subgraph of $K_5 - e$, which is representable in
+  $\mathbb{R}^3$ by Lemma~\ref{lem:kn-minus-e}, so $G$ is too by Lemma~\ref{lem:monotone}.
+
+  The paper instead adds edges until there are exactly eight. The minimal-counterexample case split
+  above replaces that step, and covers $K_4$, which the paper does not mention.
 \end{lemma}
 
 \begin{lemma}[Minimum degree three]
   \label{lem:min-degree}
-  \uses{lem:eight-edges, lem:monotone}
-  If $\dim(G) = 4$ and $|E(G)| = 9$ then every vertex of $G$ has degree at least three.
+  \uses{def:dimension, lem:eight-edges, lem:reattach}
+  If $\dim(G) = 4$, $|E(G)| = 9$ and $G$ has no isolated vertex, then every vertex of $G$ has
+  degree at least three.
+
+  The hypothesis on isolated vertices is needed: $K_{3,3}$ with an isolated vertex added has
+  dimension four and nine edges.
 
   Chaffee--Noble discharge this in Theorem 7 with the phrase ``by the arguments in the preceding
-  theorem''. Deleting a vertex of degree at most two leaves at most seven edges, so
-  Lemma~\ref{lem:eight-edges} applies and the re-placement argument of
-  Lemma~\ref{lem:eight-edges} puts $G$ in $\mathbb{R}^3$.
+  theorem''. Suppose $u$ has degree one or two. Then $G'$ as in Lemma~\ref{lem:reattach} has at
+  most eight edges: nine less one for degree one, and nine less two plus one for degree two. By
+  Lemma~\ref{lem:eight-edges} $G'$ is representable in $\mathbb{R}^3$, so $G$ is by
+  Lemma~\ref{lem:reattach}, contradicting $\dim(G) = 4$.
 \end{lemma}
 
 \section{Bounding the vertex count}
@@ -116,7 +145,7 @@ needed here. They are obligations of this development, not givens.
 \begin{lemma}[Five vertices is impossible]
   \label{lem:five-vertices}
   \uses{lem:min-degree, lem:kn-minus-e, lem:monotone}
-  There is no $G$ with $\dim(G) = 4$, $|E(G)| = 9$ and $|V(G)| = 5$.
+  There is no $G$ with $\dim(G) = 4$, $|E(G)| = 9$, $|V(G)| = 5$ and no isolated vertex.
 
   Degrees lie between three and four, and the degree sum is eighteen, forcing $(4,4,4,3,3)$.
   Chaffee--Noble assert that this sequence ``corresponds solely to the graph $K_5 - e$''; that
@@ -149,7 +178,8 @@ needed here. They are obligations of this development, not givens.
 \begin{lemma}[Six vertices forces $K_{3,3}$]
   \label{lem:six-vertices}
   \uses{lem:min-degree, lem:two-regular-six, lem:prism-planar}
-  If $\dim(G) = 4$, $|E(G)| = 9$ and $|V(G)| = 6$ then $G \cong K_{3,3}$.
+  If $\dim(G) = 4$, $|E(G)| = 9$, $|V(G)| = 6$ and $G$ has no isolated vertex, then
+  $G \cong K_{3,3}$.
 
   Minimum degree three and degree sum eighteen force three-regularity, so the complement is
   two-regular. By Lemma~\ref{lem:two-regular-six} the complement is $C_6$ or $K_3 \sqcup K_3$. The
