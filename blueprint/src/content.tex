@@ -50,12 +50,14 @@ needed here. They are obligations of this development, not givens.
 
 \begin{lemma}[$\dim(K_{3,3}) = 4$; EHT via Chaffee--Noble Lemma 3]
   \label{lem:k33-dim}
+  \lean{Erdos1007.completeBipartiteGraph_three_three_unitDistance}
   \uses{def:dimension}
   Both halves are needed and neither is quoted in Chaffee--Noble.
 
   \emph{Upper bound.} With $r = 1/\sqrt{2}$, the parts
   $\{(r,0,0,0), (-r,0,0,0), (0,r,0,0)\}$ and $\{(0,0,r,0), (0,0,-r,0), (0,0,0,r)\}$ give six
-  distinct points whose nine cross-distances are all one.
+  distinct points whose nine cross-distances are all one. This half is formalized in the
+  declaration named above; the lower bound is not yet.
 
   \emph{Lower bound.} Suppose $K_{3,3}$ were representable in $\mathbb{R}^3$ with parts $A, B$.
   Each $b \in B$ lies on all three unit spheres centred at the points of $A$. If those centres are
