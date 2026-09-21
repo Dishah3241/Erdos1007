@@ -4,7 +4,9 @@ version: "v0.4"
 project:
   name: "Unit-distance graphs of dimension four with nine edges"
   description: >-
-    Any two distinct elements of `{2, 3, 5}` are coprime.
+    A graph of dimension four with nine edges and no isolated vertex is isomorphic to K_{3,3}:
+    the extremal half of Erdős problem 1007, following Chaffee and Noble's proof of House's
+    theorem.
   authors:
     - "Dishant Shah"
   license: "Apache-2.0"
@@ -55,10 +57,10 @@ automation:
     ../../docs/PLAYBOOK.md.
 
 limitations: >-
-  Stage 1 only: the statement is frozen and Challenge.lean is generated from it,
-  but no proof is discharged. The repository does not build. Nothing here is proved.
+  Stage 2: the statement is frozen, Challenge.lean is generated from it, and the blueprint is
+  written, but no proof is discharged. The repository does not build. Nothing here is proved.
 
 review:
   status: "in-progress"
   note: >-
-    Statement frozen and adversarially reviewed; proof not started.
+    Statement frozen and adversarially reviewed; blueprint written; proof not started.
