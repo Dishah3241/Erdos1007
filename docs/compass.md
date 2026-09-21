@@ -7,7 +7,9 @@ including the whole proof interior, is checked by the kernel and the gates.
 All six project declarations are in `Erdos1007/Standalone/Mathlib/InlineErdos1007.lean`, namespace
 `Erdos1007.Standalone.Mathlib.InlineErdos1007`.
 
-**Owner sign-off: pending.** Nobody has signed this off yet.
+**Owner sign-off: provisional, 2026-09-21.** The owner agreed "for now". This unblocks Stage 3.
+The owner must confirm it again before anything lands (Stage 5), and any change to a row above
+cancels the sign-off.
 
 | # | Declaration | Must mean | Check |
 |---|---|---|---|

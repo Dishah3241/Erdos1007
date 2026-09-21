@@ -10,7 +10,7 @@ This repository targets the "only by `K₃,₃`" half.
 
 | | |
 |---|---|
-| Stage | **2 — blueprint written**; Compass sign-off pending ([`docs/compass.md`](docs/compass.md)) |
+| Stage | **2 — blueprint written**; Compass signed off provisionally ([`docs/compass.md`](docs/compass.md)) |
 | Builds | **No, by design.** See below. |
 | Palomar entry | not submitted |
 | `formal_proof` PR | not opened |
