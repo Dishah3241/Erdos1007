@@ -37,27 +37,38 @@ needed here. They are obligations of this development, not givens.
 
 \begin{lemma}[Monotonicity; EHT via Chaffee--Noble Lemma 4]
   \label{lem:monotone}
+  \lean{Erdos1007.unitDistance_comap}
+  \lean{Erdos1007.unitDistance_of_le}
+  \lean{Erdos1007.unitDistance_of_embedding}
   If $H$ is a subgraph of $G$ then $\dim(H) \le \dim(G)$.
 
   It is used here in the more basic form it follows from: a representation of $G$ in
   $\mathbb{R}^n$ restricts to a representation of any subgraph $H$ in $\mathbb{R}^n$.
+  That form is formalized in the declarations named above. The inequality of dimensions
+  is not yet a Lean theorem.
 \end{lemma}
 
 \begin{lemma}[$\dim(K_n - e) = n - 2$; EHT via Chaffee--Noble Lemma 2]
   \label{lem:kn-minus-e}
+  \lean{Erdos1007.completeGraph_five_deleteEdge_unitDistance}
   Only the instance $\dim(K_5 - e) = 3$ is used, and only the upper bound $\le 3$.
+  That upper bound is the declaration named above. The matching lower bound is not
+  formalized.
 \end{lemma}
 
 \begin{lemma}[$\dim(K_{3,3}) = 4$; EHT via Chaffee--Noble Lemma 3]
   \label{lem:k33-dim}
   \lean{Erdos1007.completeBipartiteGraph_three_three_unitDistance}
+  \lean{Erdos1007.not_exists_completeBipartiteGraph_three_three_unitDistance_three}
   \uses{def:dimension}
   Both halves are needed and neither is quoted in Chaffee--Noble.
 
   \emph{Upper bound.} With $r = 1/\sqrt{2}$, the parts
   $\{(r,0,0,0), (-r,0,0,0), (0,r,0,0)\}$ and $\{(0,0,r,0), (0,0,-r,0), (0,0,0,r)\}$ give six
-  distinct points whose nine cross-distances are all one. This half is formalized in the
-  declaration named above; the lower bound is not yet.
+  distinct points whose nine cross-distances are all one.
+
+  Both halves are formalized in the declarations named above. They are not yet assembled
+  into a theorem that $\dim(K_{3,3}) = 4$.
 
   \emph{Lower bound.} Suppose $K_{3,3}$ were representable in $\mathbb{R}^3$ with parts $A, B$.
   Each $b \in B$ lies on all three unit spheres centred at the points of $A$. If those centres are
@@ -169,12 +180,15 @@ needed here. They are obligations of this development, not givens.
 
 \begin{lemma}[The prism embeds in the plane]
   \label{lem:prism-planar}
+  \lean{Erdos1007.compl_cycleGraph_six_unitDistance}
+  \leanok
   \uses{def:representable}
   The complement of $C_6$ is representable in $\mathbb{R}^2$, hence has dimension at most two.
 
   Chaffee--Noble give the placement
   $(0,0),\ (1,0),\ (0,1),\ (1,1),\ (\tfrac12, \tfrac{\sqrt3}{2}),\ (\tfrac12, 1 + \tfrac{\sqrt3}{2})$.
-  Labelling these $A,B,C,D,E,F$, the nine unit distances are $AB, CD, AC, BD, AE, BE, CF, DF, EF$:
+  Labelling these $A,B,C,D,E,F$, the nine unit distances are
+  $AB, CD, AC, BD, AE, BE, CF, DF, EF$:
   triangles $ABE$ and $CDF$ joined by the matching $AC, BD, EF$, which is the triangular prism.
   Verified by direct computation against the paper.
 \end{lemma}

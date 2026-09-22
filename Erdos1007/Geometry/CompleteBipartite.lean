@@ -16,7 +16,8 @@ The upper bound in the dimension computation `dim(K₃,₃) = 4` (blueprint node
 `{(0, 0, r, 0), (0, 0, -r, 0), (0, 0, 0, r)}`. Every one of the nine cross pairs differs in
 exactly two coordinates by `±r`, so all nine cross-distances are one.
 
-The lower bound — no unit-distance representation of `K₃,₃` in `ℝ³` — is a separate obligation.
+The lower bound is
+`not_exists_completeBipartiteGraph_three_three_unitDistance_three`.
 
 ## References
 
