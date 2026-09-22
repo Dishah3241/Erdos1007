@@ -21,7 +21,9 @@
       "Bash(sed -n *)",
       "Bash(mkdir -p tmp*)",
       "Bash(rm tmp/*)",
-      "Bash(rm -f tmp/*)"
+      "Bash(rm -f tmp/*)",
+      "Read(//Users/dishant/Code/Math/AGENTS.md)",
+      "Read(//Users/dishant/Code/Math/docs/PLAYBOOK.md)"
     ],
     "deny": [
       "Bash(git push *)",
