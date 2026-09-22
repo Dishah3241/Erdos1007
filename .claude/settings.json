@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(lake *)",
+      "Bash(~/.elan/bin/lake *)",
+      "Bash(/Users/dishant/.elan/bin/lake *)",
+      "Bash(git status *)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(ls *)",
+      "Bash(cat *)",
+      "Bash(head *)",
+      "Bash(tail *)",
+      "Bash(wc *)",
+      "Bash(grep *)",
+      "Bash(rg *)",
+      "Bash(find *)",
+      "Bash(sed -n *)",
+      "Bash(mkdir -p tmp*)",
+      "Bash(rm tmp/*)",
+      "Bash(rm -f tmp/*)"
+    ],
+    "deny": [
+      "Bash(git push *)",
+      "Bash(git commit *)"
+    ]
+  }
+}
