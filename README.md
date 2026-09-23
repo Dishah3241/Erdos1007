@@ -10,8 +10,8 @@ This repository targets the "only by `K₃,₃`" half.
 
 | | |
 |---|---|
-| Stage | **2 — blueprint written**; Compass signed off provisionally ([`docs/compass.md`](docs/compass.md)) |
-| Builds | **No, by design.** See below. |
+| Stage | **4 — gates green; Comparator pending** ([`docs/compass.md`](docs/compass.md)) |
+| Builds | **Yes.** `Challenge.lean` keeps the advertised Palomar hole. |
 | Palomar entry | not submitted |
 | `formal_proof` PR | not opened |
 | Mathlib PR | not opened |
@@ -19,13 +19,11 @@ This repository targets the "only by `K₃,₃`" half.
 
 ## What is and is not true right now
 
-`Erdos1007/Standalone/Mathlib/InlineErdos1007.lean` and `Challenge.lean` compile. They carry the
-statement and nothing else.
+`DimensionFourExtremal` is proved, together with its satisfiability witness, both separating
+examples, and the three hypothesis-drop counterexamples. `lake build` passes.
 
-`InlineErdos1007Proof.lean` and `Solution.lean` do **not** compile: every proof is `sorry`, and
-`warningAsError = true` makes that a hard error. `lake build` fails. **Nothing in this repository
-is proved.** That is the accurate state of a project before Stage 3 finishes, and it is not a
-defect to be worked around — see `../../docs/PLAYBOOK.md`.
+Comparator has not been run. Nothing has been submitted to Palomar, `formal-conjectures`, or
+Mathlib, and the writeup has not been published.
 
 ## Source
 
