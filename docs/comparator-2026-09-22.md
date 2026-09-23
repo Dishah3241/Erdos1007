@@ -1,4 +1,4 @@
-# Comparator run, 2026-09-23
+# Comparator run, 2026-09-22
 
 Stage 4's exit condition (`../../docs/PLAYBOOK.md`): Comparator green with `enable_nanoda: true`.
 
