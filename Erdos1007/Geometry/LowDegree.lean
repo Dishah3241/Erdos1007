@@ -41,8 +41,6 @@ private lemma card_edgeFinset_induce_ne {V : Type*} [Fintype V] [DecidableEq V]
 @[expose] public section
 
 -- `fintypeEdgeSetSup` is not definitionally the `edgeFinset` instance used for `G' ⊔ E`.
--- `DecidableEq V` names the two neighbours. The type of `edgeFinset` does not use it.
-set_option linter.unusedDecidableInType false in
 attribute [-instance] SimpleGraph.fintypeEdgeSetSup in
 /-- A finite graph with nine edges and a vertex of degree one or two admits an injective
 placement in `ℝ³` in which every edge has length one (blueprint node `lem:min-degree`).
@@ -55,12 +53,13 @@ degree equal to one or two: an isolated vertex leaves all nine edges on `V \ {u}
 
 Chaffee–Noble, the argument of Theorem 7. -/
 theorem unitDistance_of_nine_edges_degree_le_two
-    {V : Type*} [Fintype V] [DecidableEq V]
+    {V : Type*} [Fintype V]
     {G : SimpleGraph V} [DecidableRel G.Adj]
     (hE : G.edgeFinset.card = 9) {u : V} (hdeg : G.degree u ≤ 2)
     (hpos : 0 < G.degree u) :
     ∃ f : V → EuclideanSpace ℝ (Fin 3), Function.Injective f ∧
       ∀ a b, G.Adj a b → dist (f a) (f b) = 1 := by
+  classical
   have glue (H : SimpleGraph {v // v ≠ u}) [DecidableRel H.Adj]
       (hsub : ∀ ⦃a b : {v // v ≠ u}⦄,
         (G.induce {v | v ≠ u}).Adj a b → H.Adj a b)
@@ -69,6 +68,7 @@ theorem unitDistance_of_nine_edges_degree_le_two
       (hEle : H.edgeFinset.card ≤ 8) :
       ∃ f : V → EuclideanSpace ℝ (Fin 3), Function.Injective f ∧
         ∀ a b, G.Adj a b → dist (f a) (f b) = 1 := by
+    classical
     obtain ⟨f, hfInj, hfDist⟩ := unitDistance_of_edgeFinset_card_le_eight (G := H) hEle
     refine unitDistance_extend_degree_le_two hdeg ⟨f, hfInj, ?_⟩
     intro a b hcond
