@@ -158,3 +158,32 @@ jobs:
           name: blueprint-${{ github.sha }}
           path: blueprint/print/print.pdf
           if-no-files-found: warn
+
+      # The published writeup: the web blueprint with its dependency graph, and the PDF beside it.
+      # Only main publishes; pull requests build and check the blueprint without deploying it.
+      - name: Assemble the published blueprint
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: cp blueprint/print/print.pdf blueprint/web/blueprint.pdf
+
+      - name: Upload the published blueprint
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: blueprint/web
+
+  pages:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: blueprint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy the blueprint to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
