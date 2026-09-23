@@ -26,13 +26,15 @@ proposition `C` in a reader-facing statement module it requires:
 * `C.witness` — evidence that `C`'s hypotheses can be jointly satisfied. A theorem whose
   hypotheses are unsatisfiable is true and proves nothing.
 
-* `C.drop_<h>` — for each non-dependent `Prop`-valued binder `h` of `C`'s body, a companion
-  whose body is definitionally `¬ C'`, where `C'` is `C` with that binder removed. `<h>` is the
-  binder's user name, or its 0-based index in the telescope when the binder is anonymous. A
-  hypothesis written with `→` is anonymous: Lean stores it under a hygienic name. A binder is
-  dependent when a later binder's type or the conclusion mentions it. Those cannot be removed,
-  so the audit skips them and prints that. The proof `C.drop_<h>.proof`, in the proof sibling,
-  is the kernel-checked counterexample.
+* `C.drop<Tag>` — for each non-dependent `Prop`-valued binder `h` of `C`'s body, a companion
+  whose body is definitionally `¬ C'`, where `C'` is `C` with that binder removed. `<Tag>` is
+  the binder's user name, split on `_`, with each segment capitalized and the segments joined,
+  or its 0-based index in the telescope when the binder is anonymous, left as digits. Thus
+  `hdim` gives `dropHdim`, `h_dim` gives `dropHDim`, and index `2` gives `drop2`. A hypothesis
+  written with `→` is anonymous: Lean stores it under a hygienic name. A binder is dependent
+  when a later binder's type or the conclusion mentions it. Those cannot be removed, so the
+  audit skips them and prints that. The proof `C.drop<Tag>.proof`, in the proof sibling, is
+  the kernel-checked counterexample.
 
 and for every definition `D` in such a module:
 
@@ -137,16 +139,25 @@ private structure Obligation where
   companion : Name
   kind : String
 
+/-- A hypothesis-drop companion. The last component starts with `drop` and then a digit
+(an anonymous binder's index) or a capital letter (a capitalized user name). -/
+private def isDropComponent (component : String) : Bool :=
+  "drop".isPrefixOf component &&
+    match component.toList.drop 4 with
+    | c :: _ => c.isDigit || c.isUpper
+    | [] => false
+
 /-- Declarations this audit requires of a subject, rather than subjects themselves. -/
 private def isObligationCompanion (declName : Name) : Bool :=
   match declName with
   | .str _ component =>
-      component == "witness" || component == "separating" || component.startsWith "drop_"
+      component == "witness" || component == "separating" || isDropComponent component
   | _ => false
 
-/-- Tag used in `C.drop_<tag>`. A name the user wrote is kept. A binder with no such name —
-`Name.anonymous`, `_`, or the hygienic name Lean invents for `→` — uses its 0-based telescope
-index, which is stable for two hypotheses the elaborator would otherwise both call `a`. -/
+/-- Raw binder tag, before it is turned into a `drop` companion name. A name the user wrote is
+kept. A binder with no such name — `Name.anonymous`, `_`, or the hygienic name Lean invents
+for `→` — uses its 0-based telescope index, which is stable for two hypotheses the elaborator
+would otherwise both call `a`. -/
 private def binderTag (userName : Name) (index : Nat) : String :=
   if userName.isAnonymous || userName.hasMacroScopes || userName == `_ then
     toString index
@@ -168,7 +179,20 @@ private def isDependentBinder (binders : Array Expr) (conclusion : Expr) (index 
       dependent := true
   return dependent
 
-/-- For each non-dependent `Prop` binder of `body`, require `claim.drop_<tag>` definitionally
+/-- Capitalize one `_`-separated piece of a binder name. The first character is made upper
+case and the rest is kept, so a digit index is unchanged. -/
+private def capitalizeSegment (segment : String) : String :=
+  match segment.toList with
+  | [] => ""
+  | c :: rest => String.ofList (c.toUpper :: rest)
+
+/-- Declaration component `drop<Tag>`. A user name is split on `_`, each segment is
+capitalized, and the segments are joined: `hdim` gives `dropHdim` and `h_dim` gives
+`dropHDim`. An index is digits, so `2` gives `drop2`. -/
+private def dropComponent (tag : String) : String :=
+  "drop" ++ String.join ((tag.splitOn "_").map capitalizeSegment)
+
+/-- For each non-dependent `Prop` binder of `body`, require `claim.drop<Tag>` definitionally
 equal to the negation of `body` with that binder removed. -/
 private def checkHypothesisDrops (claim : Name) (body : Expr) :
     MetaM (Array Obligation × Array String × Array String) := do
@@ -191,7 +215,7 @@ private def checkHypothesisDrops (claim : Name) (body : Expr) :
           kept := kept.push binders[j]!
       let weakened ← Meta.mkForallFVars kept conclusion
       let negated := mkApp (mkConst ``Not) weakened
-      let companion := Name.mkStr claim s!"drop_{tag}"
+      let companion := Name.mkStr claim (dropComponent tag)
       match (← getEnv).checked.get.find? companion with
       | none =>
           violations := violations.push

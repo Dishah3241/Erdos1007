@@ -24,9 +24,9 @@ list again before anything lands.
 | 6 | `HasDimension.separating` | some graph **with an edge** is representable in `ℝ⁴` without having dimension four | Requiring an edge rules out the empty-graph degenerate case. Red-team finding 3. |
 | 7 | Mathlib `completeBipartiteGraph (Fin 3) (Fin 3)` | `K₃,₃` on `Fin 3 ⊕ Fin 3` | This is a root-namespace declaration, not `SimpleGraph.completeBipartiteGraph`. |
 | 8 | Mathlib `G.edgeSet.ncard = 9` | exactly nine edges | `ncard` is `0` on an infinite set, but `Fin n` is finite, so this is the true count. |
-| 9 | `DimensionFourExtremal.drop_2` | without dimension four, nine edges and no isolated vertex do not force `K₃,₃` | Nine disjoint edges on `Fin 18`: nine edges, every vertex of degree one, and `18 ≠ 6`. |
-| 10 | `DimensionFourExtremal.drop_3` | without the edge count, dimension four and no isolated vertex do not force `K₃,₃` | `K₃,₃` plus the edge between `(r, 0, 0, 0)` and `(0, r, 0, 0)`, `r = 1/√2`. Dimension four, no isolated vertex, ten edges. |
-| 11 | `DimensionFourExtremal.drop_4` | without "no isolated vertex", dimension four and nine edges do not force `K₃,₃` | `K₃,₃` plus an isolated vertex, on `Fin 7`. Dimension four, nine edges, and `7 ≠ 6`. |
+| 9 | `DimensionFourExtremal.drop2` | without dimension four, nine edges and no isolated vertex do not force `K₃,₃` | Nine disjoint edges on `Fin 18`: nine edges, every vertex of degree one, and `18 ≠ 6`. |
+| 10 | `DimensionFourExtremal.drop3` | without the edge count, dimension four and no isolated vertex do not force `K₃,₃` | `K₃,₃` plus the edge between `(r, 0, 0, 0)` and `(0, r, 0, 0)`, `r = 1/√2`. Dimension four, no isolated vertex, ten edges. |
+| 11 | `DimensionFourExtremal.drop4` | without "no isolated vertex", dimension four and nine edges do not force `K₃,₃` | `K₃,₃` plus an isolated vertex, on `Fin 7`. Dimension four, nine edges, and `7 ≠ 6`. |
 
 Inherited provenance: rows 1–3 reproduce `erdos_1007.variants.dimension_four_extremal` from
 `formal-conjectures`. The adversarial review checked that they agree with it by `rfl`

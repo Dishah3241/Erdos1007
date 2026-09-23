@@ -107,14 +107,14 @@ def DimensionFourExtremal : Prop :=
 
 /-- Dropping dimension four leaves a false statement. Nine disjoint edges on `Fin 18` have nine
 edges and no isolated vertex, and eighteen vertices are not the six of `K₃,₃`. -/
-def DimensionFourExtremal.drop_2 : Prop :=
+def DimensionFourExtremal.drop2 : Prop :=
   ¬ ∀ (n : ℕ) (G : SimpleGraph (Fin n)),
       G.edgeSet.ncard = 9 → (∀ v : Fin n, ∃ w : Fin n, G.Adj v w) →
         Nonempty (G ≃g completeBipartiteGraph (Fin 3) (Fin 3))
 
 /-- Dropping the edge count leaves a false statement. `K₃,₃` with one extra edge inside a part
 has dimension four and no isolated vertex, and ten edges are not the nine of `K₃,₃`. -/
-def DimensionFourExtremal.drop_3 : Prop :=
+def DimensionFourExtremal.drop3 : Prop :=
   ¬ ∀ (n : ℕ) (G : SimpleGraph (Fin n)),
       HasDimension G 4 → (∀ v : Fin n, ∃ w : Fin n, G.Adj v w) →
         Nonempty (G ≃g completeBipartiteGraph (Fin 3) (Fin 3))
@@ -122,7 +122,7 @@ def DimensionFourExtremal.drop_3 : Prop :=
 /-- Dropping the hypothesis that every vertex has a neighbour leaves a false statement. `K₃,₃`
 plus an isolated vertex, on `Fin 7`, has dimension four and nine edges, and seven vertices are
 not the six of `K₃,₃`. -/
-def DimensionFourExtremal.drop_4 : Prop :=
+def DimensionFourExtremal.drop4 : Prop :=
   ¬ ∀ (n : ℕ) (G : SimpleGraph (Fin n)),
       HasDimension G 4 → G.edgeSet.ncard = 9 →
         Nonempty (G ≃g completeBipartiteGraph (Fin 3) (Fin 3))

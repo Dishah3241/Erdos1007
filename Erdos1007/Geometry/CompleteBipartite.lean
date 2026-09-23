@@ -53,7 +53,7 @@ private theorem sq_dist_svec {a b : ℝ} {i j : Fin 4} (h : i ≠ j) :
 
 /-- The placement of `K₃,₃` in `ℝ⁴` realises every cross edge, and also the segment joining
 `(r, 0, 0, 0)` to `(0, r, 0, 0)`, as a unit segment. -/
-theorem completeBipartiteGraph_three_three_unitDistance_withLeft :
+theorem completeBipartiteGraph_three_three_unitDistance_with_left :
     ∃ f : Fin 3 ⊕ Fin 3 → EuclideanSpace ℝ (Fin 4), Function.Injective f ∧
       (∀ u v, (completeBipartiteGraph (Fin 3) (Fin 3)).Adj u v → dist (f u) (f v) = 1) ∧
       dist (f (Sum.inl 0)) (f (Sum.inl 2)) = 1 := by
@@ -129,7 +129,7 @@ part at `{(0, 0, r, 0), (0, 0, -r, 0), (0, 0, 0, r)}`; the squared distance of a
 theorem completeBipartiteGraph_three_three_unitDistance :
     ∃ f : Fin 3 ⊕ Fin 3 → EuclideanSpace ℝ (Fin 4), Function.Injective f ∧
       ∀ u v, (completeBipartiteGraph (Fin 3) (Fin 3)).Adj u v → dist (f u) (f v) = 1 := by
-  obtain ⟨f, hfInj, hfDist, _⟩ := completeBipartiteGraph_three_three_unitDistance_withLeft
+  obtain ⟨f, hfInj, hfDist, _⟩ := completeBipartiteGraph_three_three_unitDistance_with_left
   exact ⟨f, hfInj, hfDist⟩
 
 end
