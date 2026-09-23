@@ -16,12 +16,25 @@ permissions:
   contents: read
 
 jobs:
+  # Palomar requires a request id of exactly twelve lowercase alphanumeric characters.
+  request-id:
+    runs-on: ubuntu-latest
+    outputs:
+      id: ${{ steps.id.outputs.id }}
+    steps:
+      - id: id
+        run: printf 'id=p%011d\n' "$(( GITHUB_RUN_ID % 100000000000 ))" >> "$GITHUB_OUTPUT"
+
   preflight:
+    needs: request-id
     uses: PalomarRegistry/PalomarSubmission/.github/workflows/submission.yml@f49b4f29aa458fc70c3a4c8cadca9312adbdc559
     with:
       repository: ${{ github.repository }}
       commit: ${{ inputs.commit }}
       pipeline_commit: f49b4f29aa458fc70c3a4c8cadca9312adbdc559
-      request_id: preflight-${{ github.run_id }}
+      request_id: ${{ needs.request-id.outputs.id }}
       mode: full
       execution_profile: palomar-standard-v1
+      # The same answers a submission gives: this Comparator configuration, and the submitter's
+      # relationship to the formalization.
+      options: '{"comparator_config_path": "comparator.json", "authorization_relationship": "I am a responsible author or maintainer"}'
