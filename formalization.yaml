@@ -1,17 +1,23 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/mathlib-initiative/formalization.yaml/main/schema/formalization.schema.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/mathlib-initiative/formalization.yaml/main/schema/v0.4.schema.json
 version: "v0.4"
 
 project:
   name: "Unit-distance graphs of dimension four with nine edges"
   description: >-
-    A graph of dimension four with nine edges and no isolated vertex is isomorphic to K_{3,3}:
-    the extremal half of Erdős problem 1007, following Chaffee and Noble's proof of House's
-    theorem.
+    A graph has dimension n when n is the least number such that its vertices can be placed
+    injectively in ℝⁿ with every edge of length one (Erdős, Harary and Tutte). House proved that a
+    graph of dimension four has at least nine edges, and that nine is attained only by K_{3,3}.
+    This project proves the second half in Lean 4, in the form google-deepmind/formal-conjectures
+    states it as erdos_1007.variants.dimension_four_extremal: a graph of dimension four with nine
+    edges and no isolated vertex is isomorphic to K_{3,3}. The proof follows Chaffee and Noble's
+    proof of House's theorem. On the way it proves that K_{3,3} has dimension exactly four and that
+    every graph with at most eight edges has a unit-distance representation in ℝ³ (Chaffee–Noble,
+    Theorem 6).
   authors:
     - "Dishant Shah"
-  license: "Apache-2.0"
   responsible_maintainers:
     - "Dishant Shah"
+  license: "Apache-2.0"
 
 classification:
   arxiv: ["math.CO", "math.MG"]
@@ -24,50 +30,255 @@ sources:
       - "Matt Noble"
     id: "https://ajc.maths.uq.edu.au/pdf/64/ajc_v64_p327.pdf"
     type: "paper"
-    location: "Australasian Journal of Combinatorics 64(2) (2016), 327-333, Theorem 7"
+    location: "Australasian Journal of Combinatorics 64(2) (2016), 327–333: Theorems 6 and 7, and the lemmas they use"
     relationship: "formalizes"
+    author_endorsement: "not-contacted"
     note: >-
-      The published proof this formalization certifies. Cited at its exact pinpoint, not at the
-      paper as a whole.
-  - title: "Formal Conjectures"
+      The proof of record, which the formal proof follows. Two steps the paper states without
+      argument are proved here: nine edges on five vertices leave exactly one non-edge, and a
+      nine-edge graph of minimum degree three has at most six vertices.
+  - title: "A 4-dimensional graph has at least 9 edges"
     authors:
-      - "The Formal Conjectures Authors"
-    id: "https://github.com/google-deepmind/formal-conjectures"
-    type: "other"
-    location: "FormalConjectures/ErdosProblems/1007.lean, declaration erdos_1007.variants.dimension_four_extremal"
+      - "Roger F. House"
+    id: "https://doi.org/10.1016/j.disc.2013.05.005"
+    type: "paper"
+    location: "Discrete Mathematics 313(18) (2013), 1783–1789"
+    relationship: "background"
+    author_endorsement: "not-contacted"
+    note: >-
+      The first proof of the theorem. It was not consulted, and nothing here derives from it.
+  - title: "On the dimension of a graph"
+    authors:
+      - "Paul Erdős"
+      - "Frank Harary"
+      - "William T. Tutte"
+    id: "https://doi.org/10.1112/S0025579300005222"
+    type: "paper"
+    location: "Mathematika 12(2) (1965), 118–122"
     relationship: "background"
     note: >-
-      The formal statement originates here and carries that project's review. Any deviation from
-      the upstream statement is recorded under `limitations` below.
+      Defines the dimension of a graph. The lemmas Chaffee and Noble take from it are formalized
+      as Chaffee and Noble state them; this paper was not consulted.
+  - title: "Embedding graphs in Euclidean space"
+    authors:
+      - "Nóra Frankl"
+      - "Andrey Kupavskii"
+      - "Konrad J. Swanepoel"
+    id: "https://doi.org/10.1016/j.jcta.2019.105146"
+    type: "paper"
+    location: "Journal of Combinatorial Theory, Series A 171 (2020), 105146: the introduction and Theorem 3"
+    relationship: "background"
+    note: >-
+      Context for the result. For every d ≥ 4 a graph with fewer than C(d + 2, 2) edges has a
+      unit-distance representation in ℝᵈ; dimension three is the exception, because of K_{3,3}.
+  - title: "Erdős Problem #1007"
+    authors:
+      - "Thomas F. Bloom"
+    contributors:
+      - name: "Paul Erdős"
+        role: "problem proposer"
+    id: "https://www.erdosproblems.com/1007"
+    type: "other"
+    location: "the erdosproblems.com database, accessed 2026-09-22"
+    relationship: "background"
+    note: >-
+      The problem as catalogued, with its history: Erdős posed it to Soifer in January 1992. The
+      page is a problem database entry, so its type is other.
+
+related_formalizations:
+  - id: "https://github.com/google-deepmind/formal-conjectures/blob/2a46c7bd74505b85f4967475bb733ded0ef8d348/FormalConjectures/ErdosProblems/1007.lean"
+    relationship: "builds-on"
+    note: >-
+      The formal statement is this file's erdos_1007.variants.dimension_four_extremal, reproduced
+      with its two supporting definitions, SimpleGraph.UnitDistanceEmbeddable and
+      SimpleGraph.HasDimension, inlined so that the statement depends on Mathlib alone.
+  - id: "https://github.com/plby/lean-proofs"
+    relationship: "independent"
+    note: >-
+      Boris Alexeev's formalization, made with Aristotle according to his comment on the problem's
+      forum, proves the other half of problem 1007: formal-conjectures' erdos_1007, that the least
+      number of edges of a graph of dimension four is nine. That statement requires a nine-edge
+      graph of dimension four and the representability in ℝ³ of every graph with at most eight
+      edges, both of which are also proved here. It does not prove the uniqueness statement proved
+      here. That repository has no licence, and nothing from it is used here.
+
+status:
+  scope: >-
+    Complete for its target, the extremal half of Erdős problem 1007 exactly as formal-conjectures
+    states it. The other half, that the least number of edges of a graph of dimension four is
+    nine, is not stated here, although both of its ingredients are proved. The dimension-five
+    results of the same paper are out of scope.
+  sorry_count: 0
+  sorry_in_definitions: 0
+  axioms: ["propext", "Classical.choice", "Quot.sound"]
+  main_results:
+    - declaration: "Erdos1007.Palomar.target"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
+    - declaration: "Erdos1007.Standalone.Mathlib.InlineErdos1007.DimensionFourExtremal.proof"
+      file: "Erdos1007/Standalone/Mathlib/InlineErdos1007Proof.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+    - declaration: "Erdos1007.Standalone.Mathlib.InlineErdos1007.DimensionFourExtremal.witness.proof"
+      file: "Erdos1007/Standalone/Mathlib/InlineErdos1007Proof.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+
+fidelity:
+  divergences: >-
+    None in meaning. The statement is formal-conjectures' erdos_1007.variants.dimension_four_extremal
+    with its supporting definitions inlined and its ℝ^n notation written out as
+    EuclideanSpace ℝ (Fin n). With both builds loaded together, the inlined statement is equal to
+    the upstream declaration's type by rfl, and the proof elaborates against that type using only
+    propext, Classical.choice and Quot.sound (docs/upstream-check-2026-09-22.md). Two earlier
+    reviews checked the same equality against copies of the upstream definitions
+    (docs/red-team-2026-09-20.md, docs/review-2026-09-22.md). The statement carries the upstream
+    hypothesis that no vertex is isolated. It is necessary: adding isolated vertices to K_{3,3}
+    changes neither the dimension nor the edge count, and a kernel-checked companion proves the
+    statement false without it.
 
 automation:
-  # Declared honestly on every entry from this workspace. Only 3 of Palomar's first 36 entries
-  # disclosed AI assistance; understating it would make the registry less useful than it should be.
   methods:
-    - "AI-assisted"
-  detail: >-
-    The formal statement reproduces a declaration of google-deepmind/formal-conjectures, which
-    carries that project's own review, with its two supporting definitions inlined so the file
-    depends on Mathlib alone. The inlining was done by Claude Opus 5 and expands a notation to
-    its definition without other change. An adversarial review of the inlined statement was run
-    on gpt-5.6-sol; its findings are in docs/red-team-2026-09-20.md. Candidate selection was
-    assisted by zai/glm-5.3-flash; retrieval receipts are in ../../docs/triage-results.md. The
-    proof of DimensionFourExtremal, its witness, and both separating examples was produced by
-    Grok 4.7 workers, with Claude Opus 5.5 recorded on the landing commit 6de7090. The three
-    hypothesis-drop companions and their counterexamples were added by Grok 4.7. See AGENTS.md
-    and ../../docs/PLAYBOOK.md.
+    - method: "agent"
+      models: ["glm-5.3-flash"]
+      framework: "pi coding agent 0.85.1"
+      tool_setup: >-
+        Target selection. Nine read-only literature-triage runs over candidate problems, each
+        returning its retrieval receipts. The target was chosen from their results.
+    - method: "agent"
+      models: ["claude-opus-5"]
+      framework: "Claude Code"
+      tool_setup: >-
+        Statement and plan. Reproduced the upstream statement with its definitions inlined; wrote
+        the separating examples and the non-vacuity witness that the fidelity audit requires;
+        generated Challenge.lean from the statement; wrote the blueprint. Acted as the manager for
+        the first two proof leaves, re-running the kernel checks before landing each one.
+    - method: "agent"
+      models: ["gpt-6-astra"]
+      framework: "Codex CLI 0.155.1"
+      tool_setup: >-
+        Adversarial review of the frozen statement, read-only, by a different model lineage
+        (run 20260920-161248-b26f59ee). It checked the inlined statement against the upstream
+        definitions by rfl and found two defects in the separating examples, both repaired before
+        any proof work.
+    - method: "agent"
+      models: ["grok-4.7", "glm-5.3-flash"]
+      framework: "Grok CLI 1.0.41; pi coding agent 0.85.1"
+      tool_setup: >-
+        Proof. A Grok manager session dispatched one blueprint node per worker, each in a
+        disposable git worktree. Grok workers proved the target and most lemmas; two pi workers
+        proved that K_{3,3} has a unit-distance placement in ℝ⁴ and classified the two-regular
+        graphs on six vertices. Two attempts by Claude workers failed and contributed nothing.
+      cost:
+        wall_time: "about two days, 2026-09-21 to 2026-09-22"
+        hardware: "one Mac mini; hosted models on subscription plans"
+    - method: "agent"
+      models: ["claude-opus-5-5", "grok-4.7", "glm-5.3-flash"]
+      framework: "Claude Code 2.1.280; Grok CLI 1.0.41; pi coding agent 0.85.1"
+      tool_setup: >-
+        Review and release. A Claude worker reviewed the finished proof independently and
+        read-only (run 20260922-192050-ef4eae31). The manager, on claude-opus-5-5, ran Comparator
+        with the NanoDa kernel and the upstream type check, and dispatched the remaining work:
+        kernel-checked hypothesis-drop companions (Grok), and the fixes the review asked for,
+        linter fixes (pi) and named theorems for every blueprint step (Grok).
+      prompting_notes: >-
+        Every worker received a written brief with its goal, its scope, the commands that decide
+        acceptance, and hard rules: no sorry, no native_decide, no new axiom, no switched-off
+        linter, never push. Each returned what it changed, what it verified, its assumptions and
+        what it left undone. The manager re-ran the checks before landing any change. The briefs
+        live in the private workspace repository.
+  spend_usd: "subscription-based usage"
+  notes: >-
+    The owner chose the target, signed off on what each statement-level declaration must mean
+    (docs/compass.md), and approved publication; the owner wrote no Lean. Every Lean change
+    reached this repository through a manager that re-ran the kernel checks, and the model names
+    above are taken from the run logs. Model identifiers are as the harnesses report them; the
+    Grok CLI records its usage as grok-4.7-build.
 
 limitations: >-
-  The certified statement is Chaffee–Noble Theorem 7 for dimension four: a graph of dimension
-  four with nine edges and no isolated vertex is isomorphic to K_{3,3}. The dimension-five half
-  of the same paper is not formalized. Each of the three hypotheses is necessary. The
-  counterexamples are proved: nine disjoint edges on eighteen vertices; K_{3,3} plus one edge
-  inside a part; K_{3,3} plus an isolated vertex on seven vertices. Comparator has not been run.
+  The theorem is exactly the upstream statement: finite graphs on Fin n, with the no-isolated-vertex
+  hypothesis. The other half of problem 1007, that nine edges is the minimum, is not stated as a
+  theorem here, and neither is the uniqueness of K₆ and K_{1,3,3} in dimension five. Comparator was
+  run locally without its Linux sandbox, which Palomar supplies on submission.
 
 review:
-  status: "in-progress"
-  note: >-
-    The extremal statement, its witness, both separating examples, and the three hypothesis-drop
-    counterexamples are proved in Lean. The Compass sign-off is void until the owner confirms
-    again: UnitDistanceEmbeddable.separating changed at 6de7090. Comparator is pending. Palomar,
-    the formal_proof pull request, the Mathlib pull request, and the writeup are not done.
+  status: "agent-reviewed"
+  reviewers:
+    - "gpt-6-astra (Codex CLI): adversarial review of the statement"
+    - "claude-opus-5-5 (Claude Code): independent review of the proof"
+    - "Dishant Shah: sign-off on the meaning of the statement-level declarations"
+  notes: >-
+    Kernel-checked from a clean tree: lake build with warnings as errors; lake exe axioms (only
+    propext, Classical.choice, Quot.sound); the fidelity battery, including separating examples, a
+    non-vacuity witness and hypothesis-drop counterexamples; module-system, layering,
+    standalone-mathlib, proof-links, style, documentation and palomar-compatibility audits;
+    Mathlib's environment linters; leanblueprint checkdecls; and scripts/audit-probes.sh, which
+    checks that each audit rejects what it should. Comparator accepted Solution against Challenge
+    with both the Lean kernel and NanoDa (docs/comparator-2026-09-22.md). No independent human
+    has reviewed the proof. Its correctness rests on the kernel checks above, and the statement's
+    meaning on the reviews listed here.
+
+alignment:
+  namespace: "Erdos1007"
+  statements:
+    - source: "Chaffee–Noble 2016, Theorem 7, extremal half: a graph of dimension four with nine edges and no isolated vertex is K_{3,3}"
+      lean: "Erdos1007.Standalone.Mathlib.InlineErdos1007.DimensionFourExtremal.proof"
+      module: "Erdos1007/Standalone/Mathlib/InlineErdos1007Proof.lean"
+      status: "proved"
+      note: "Restated for Comparator as Erdos1007.Palomar.target in Solution.lean."
+    - source: "Chaffee–Noble 2016, Theorem 6: every graph with at most eight edges has a unit-distance representation in ℝ³"
+      lean: "Erdos1007.unitDistance_of_edgeFinset_card_le_eight"
+      module: "Erdos1007/Geometry/EightEdges.lean"
+      status: "proved"
+    - source: "K_{3,3} has dimension four (Chaffee–Noble Lemma 3, attributed there to Erdős, Harary and Tutte)"
+      lean: "Erdos1007.Standalone.Mathlib.InlineErdos1007.hasDimension_completeBipartiteGraph_three_three"
+      module: "Erdos1007/Standalone/Mathlib/InlineErdos1007Proof.lean"
+      status: "proved"
+    - source: "K_5 minus an edge has a unit-distance representation in ℝ³ (Chaffee–Noble Lemma 2 at n = 5)"
+      lean: "Erdos1007.completeGraph_five_deleteEdge_unitDistance"
+      module: "Erdos1007/Geometry/CompleteMinusEdge.lean"
+      status: "proved"
+      note: "Only this upper bound is used; the lemma's equality of dimensions is not formalized."
+    - source: "Monotonicity under subgraphs (Chaffee–Noble Lemma 4)"
+      lean: "Erdos1007.unitDistance_of_le"
+      module: "Erdos1007/Geometry/UnitDistanceComap.lean"
+      status: "proved"
+      note: "Formalized for representations in a fixed ℝⁿ, the form the argument uses, not as an inequality of dimensions."
+    - source: "Re-attaching a vertex of degree at most two (the argument of Chaffee–Noble Theorem 6)"
+      lean: "Erdos1007.unitDistance_extend_degree_le_two"
+      module: "Erdos1007/Geometry/Reattach.lean"
+      status: "proved"
+    - source: "A nine-edge graph of dimension four with no isolated vertex has minimum degree at least three (Chaffee–Noble Theorem 7)"
+      lean: "Erdos1007.Standalone.Mathlib.InlineErdos1007.degree_ge_three_of_hasDimension_four_nine_edges"
+      module: "Erdos1007/Standalone/Mathlib/InlineErdos1007Proof.lean"
+      status: "proved"
+    - source: "A nine-edge graph of minimum degree three has at most six vertices (used without argument in Chaffee–Noble Theorem 7)"
+      lean: "Erdos1007.nine_edges_minDegree_three_card_le_six"
+      module: "Erdos1007/Combinatorics/SimpleGraph/NineEdges.lean"
+      status: "proved"
+    - source: "Nine edges on five vertices give K_5 minus an edge (asserted without argument in Chaffee–Noble Theorem 7)"
+      lean: "Erdos1007.nine_edges_iso_deleteEdge"
+      module: "Erdos1007/Combinatorics/SimpleGraph/FiveVertices.lean"
+      status: "proved"
+    - source: "No graph on five vertices has dimension four and nine edges"
+      lean: "Erdos1007.Standalone.Mathlib.InlineErdos1007.not_hasDimension_four_nine_edges_fin_five"
+      module: "Erdos1007/Standalone/Mathlib/InlineErdos1007Proof.lean"
+      status: "proved"
+    - source: "Six vertices, dimension four, nine edges and no isolated vertex force K_{3,3}"
+      lean: "Erdos1007.Standalone.Mathlib.InlineErdos1007.iso_completeBipartiteGraph_three_three_of_hasDimension_four_fin_six"
+      module: "Erdos1007/Standalone/Mathlib/InlineErdos1007Proof.lean"
+      status: "proved"
+    - source: "Two-regular graphs on six vertices are C_6 or two triangles"
+      lean: "Erdos1007.isRegularOfDegree_two_fin_six"
+      module: "Erdos1007/Combinatorics/SimpleGraph/TwoRegularSix.lean"
+      status: "proved"
+    - source: "The triangular prism, the complement of C_6, has a unit-distance representation in the plane"
+      lean: "Erdos1007.compl_cycleGraph_six_unitDistance"
+      module: "Erdos1007/Geometry/Prism.lean"
+      status: "proved"
+
+acknowledgements: >-
+  Built on Mathlib. The statement comes from google-deepmind/formal-conjectures. Comparator,
+  lean4export and the NanoDa kernel checked the proof; leanblueprint renders the blueprint.

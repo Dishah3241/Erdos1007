@@ -1,8 +1,11 @@
 # Comparator run, 2026-09-22
 
-Stage 4's exit condition (`../../docs/PLAYBOOK.md`): Comparator green with `enable_nanoda: true`.
+Comparator checks that `Solution.lean` proves exactly the statement in `Challenge.lean`, with only
+the permitted axioms, and replays the proof through two independent kernels.
 
-- **Tree:** commit `6de7090`, clean. `comparator.json` as committed:
+- **Tree:** the Lean sources, `comparator.json` and the Lake configuration of commit `2a8b97d`.
+  That is the last commit to change any of them; every later commit changes documentation only.
+  `comparator.json` as committed:
   - target `Erdos1007.Palomar.target`
   - permitted axioms `propext`, `Quot.sound`, `Classical.choice`
   - `enable_nanoda: true`
@@ -10,10 +13,11 @@ Stage 4's exit condition (`../../docs/PLAYBOOK.md`): Comparator green with `enab
   - Comparator `c0c5a52`, the last commit on the Lean v4.33 toolchain, built here with
     `leanprover/lean4:v4.33.1` to match this project
   - its pinned `lean4export` `15f6055`
-  - NanoDa `nanoda_lib` `3a24072`, built with Rust 1.98.0
+  - the NanoDa kernel, `ammkrn/nanoda_lib` `3a24072`, built with Rust 1.98.0
 - **Sandbox:** none. The run used Comparator's `scripts/fake-landrun.sh`, because the real
   landrun sandbox is Linux-only. This checks the mathematics, not isolation. Palomar re-runs
-  Comparator sandboxed on submission.
+  Comparator sandboxed, with its own pinned tools, and the `Palomar preflight` workflow runs that
+  pipeline on GitHub.
 
 ## Result
 
@@ -29,10 +33,13 @@ Lean default kernel accepts the solution
 Your solution is okay!
 ```
 
-36 s wall clock, 2.8 GB peak resident memory, on the Mac mini.
+32 s wall clock and 2.8 GB peak resident memory, on a Mac mini.
 
-The only warning in the `Challenge` build is Palomar's advertised hole: `Challenge.lean:128`,
+The only warning in the `Challenge` build is Palomar's advertised hole: `Challenge.lean:150`,
 `declaration uses 'sorry'`.
+
+An earlier run, on commit `7d70413` before the hypothesis-drop companions and the review fixes, gave
+the same result.
 
 ## Command
 

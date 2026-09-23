@@ -1,18 +1,21 @@
 # Compass list
 
 The declarations whose meaning decides whether the target theorem says what it claims. This is the
-owner's whole review surface under `../../docs/PLAYBOOK.md` stage 1, step 5. Everything else,
-including the whole proof interior, is checked by the kernel and the gates.
+owner's whole review surface. Everything else, including the whole proof interior, is checked by the
+kernel and the gates.
 
 The project declarations are in `Erdos1007/Standalone/Mathlib/InlineErdos1007.lean`, namespace
 `Erdos1007.Standalone.Mathlib.InlineErdos1007`. Rows 7 and 8 are Mathlib's.
 
-**Owner sign-off: void.** Provisional agreement on 2026-09-21 ("for now") unblocked Stage 3.
-Row 5 changed at `6de7090`: `UnitDistanceEmbeddable.separating` gained the conjunct
-`UnitDistanceEmbeddable G n`. That conjunct names the subject so the fidelity audit can see it;
-the exhibited placement already supplies an injective unit-distance map, so the conjunct does not
-add a geometric condition. Any change to a row cancels the sign-off. The owner must confirm the
-list again before anything lands.
+**Owner sign-off: confirmed on 2026-09-22 for rows 1–11.** Any change to a row cancels it.
+
+- A provisional agreement on 2026-09-21 ("for now") unblocked the proof work.
+- Row 5 then changed at `7d70413`: `UnitDistanceEmbeddable.separating` gained the conjunct
+  `UnitDistanceEmbeddable G n`. That conjunct names the subject so the fidelity audit can see it.
+  The exhibited placement already supplies an injective unit-distance map, so the conjunct adds no
+  geometric condition.
+- Rows 9–11 were added with the hypothesis-drop companions.
+- The owner confirmed the whole list again before publication.
 
 | # | Declaration | Must mean | Check |
 |---|---|---|---|
