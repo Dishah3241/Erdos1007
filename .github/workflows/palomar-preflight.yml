@@ -1,0 +1,27 @@
+name: Palomar preflight
+
+# Runs Palomar's own mechanical verifier on one exact commit before it is submitted, as
+# https://submit.palomar-registry.org/llms.txt asks. The pipeline pin appears twice, in `uses` and
+# in `pipeline_commit`, and the two must match. A pass predicts the registry's mechanical check but
+# does not replace it; Palomar verifies the commit itself on submission.
+on:
+  workflow_dispatch:
+    inputs:
+      commit:
+        description: Full 40-character commit to verify
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  preflight:
+    uses: PalomarRegistry/PalomarSubmission/.github/workflows/submission.yml@f49b4f29aa458fc70c3a4c8cadca9312adbdc559
+    with:
+      repository: ${{ github.repository }}
+      commit: ${{ inputs.commit }}
+      pipeline_commit: f49b4f29aa458fc70c3a4c8cadca9312adbdc559
+      request_id: preflight-${{ github.run_id }}
+      mode: full
+      execution_profile: palomar-standard-v1
