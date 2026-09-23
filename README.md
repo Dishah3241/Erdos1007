@@ -14,7 +14,7 @@ and no isolated vertex is `K₃,₃`.
 | Comparator | accepted by Lean's kernel and by NanoDa ([record](docs/comparator-2026-09-22.md)) |
 | Blueprint | [web](https://dishah3241.github.io/Erdos1007/) and [PDF](https://dishah3241.github.io/Erdos1007/blueprint.pdf), built by CI from `blueprint/src/content.tex` |
 | `formal-conjectures` link | [pull request #6511](https://github.com/google-deepmind/formal-conjectures/pull/6511), under review |
-| Palomar entry | [PALOMAR-2026-09-23-000003](https://palomar-registry.org/entry.html?id=PALOMAR-2026-09-23-000003&version=1), registered at commit `43f8941` |
+| Palomar entry | [PALOMAR-2026-09-23-000003](https://palomar-registry.org/entry.html?id=PALOMAR-2026-09-23-000003&version=1), registered at commit `43f8941` ([record](docs/palomar-2026-09-22.md)) |
 | Mathlib contributions | three candidates, to be generalized in a shared graph-dimension library first: equal spheres about three distinct points of `ℝ³` share at most two points; the isometry extending `EuclideanSpace` by zero; the components of a finite two-regular graph are cycles |
 
 ## Context
