@@ -116,6 +116,146 @@ theorem HasDimension.separating.proof : HasDimension.separating := by
     have hle : (4 : ℕ) ≤ 1 := (mem_lowerBounds.mp h.2) 1 (k2 1 0)
     exact absurd hle (by decide : ¬ (4 : ℕ) ≤ 1)
 
+/-- Dimension four rules out a unit-distance representation in `ℝᵐ` for every `m ≤ 3`. -/
+theorem not_unitDistance_le_three_of_hasDimension_four
+    {V : Type*} {G : SimpleGraph V} (hdim : HasDimension G 4) {m : ℕ} (hm : m ≤ 3)
+    (hrep : ∃ f : V → EuclideanSpace ℝ (Fin m), Function.Injective f ∧
+      ∀ u v, G.Adj u v → dist (f u) (f v) = 1) : False := by
+  obtain ⟨g, hgInj, hgDist⟩ := unitDistance_of_fin_le hm hrep
+  have h3 : UnitDistanceEmbeddable G 3 := ⟨g, hgInj, hgDist⟩
+  have hle : (4 : ℕ) ≤ 3 := (mem_lowerBounds.mp hdim.2) 3 h3
+  exact absurd hle (by decide : ¬ (4 : ℕ) ≤ 3)
+
+/-- A graph of dimension four with nine edges and no isolated vertex has minimum degree at
+least three.
+
+Blueprint node `lem:min-degree`. A vertex of degree one or two is representable in `ℝ³` after
+deleting it and re-attaching, which contradicts dimension four. -/
+theorem degree_ge_three_of_hasDimension_four_nine_edges
+    {V : Type*} [Fintype V] {G : SimpleGraph V} [DecidableRel G.Adj]
+    (hdim : HasDimension G 4) (hEdges : G.edgeSet.ncard = 9)
+    (hnbr : ∀ v : V, ∃ w : V, G.Adj v w) : ∀ v, 3 ≤ G.degree v := by
+  have hcard : G.edgeFinset.card = 9 :=
+    (Set.ncard_eq_toFinset_card' G.edgeSet).symm.trans hEdges
+  intro v
+  have hpos : 0 < G.degree v := (G.degree_pos_iff_exists_adj v).mpr (hnbr v)
+  rcases Nat.lt_or_ge (G.degree v) 3 with hlt | hge
+  · have hle : G.degree v ≤ 2 := Nat.lt_succ_iff.mp hlt
+    exact False.elim (not_unitDistance_le_three_of_hasDimension_four hdim le_rfl
+      (unitDistance_of_nine_edges_degree_le_two hcard hle hpos))
+  · exact hge
+
+/-- There is no graph on five vertices of dimension four with nine edges.
+
+Blueprint node `lem:five-vertices`. Nine edges on `Fin 5` force minimum degree three, so the
+graph is `K₅` with one edge deleted. That graph is representable in `ℝ³`, which contradicts
+dimension four. -/
+theorem not_hasDimension_four_nine_edges_fin_five
+    {G : SimpleGraph (Fin 5)}
+    (hdim : HasDimension G 4) (hEdges : G.edgeSet.ncard = 9) : False := by
+  classical
+  have hcard : G.edgeFinset.card = 9 :=
+    (Set.ncard_eq_toFinset_card' G.edgeSet).symm.trans hEdges
+  obtain ⟨a, b, hab, ⟨φ⟩⟩ := nine_edges_iso_deleteEdge hcard
+  obtain ⟨e, hea, heb⟩ : ∃ e : Fin 5 ≃ Fin 5, e a = 3 ∧ e b = 4 := by
+    let e1 : Fin 5 ≃ Fin 5 := Equiv.setValue (Equiv.refl (Fin 5)) a 3
+    have he1 : e1 a = 3 := Equiv.setValue_eq (Equiv.refl (Fin 5)) a 3
+    have hsym : a ≠ e1.symm (4 : Fin 5) := by
+      intro hps
+      have : e1 a = 4 := by
+        rw [hps]
+        exact e1.apply_symm_apply 4
+      rw [he1] at this
+      exact absurd this (by decide : (3 : Fin 5) ≠ 4)
+    have hea' : Equiv.setValue e1 b 4 a = 3 := by
+      unfold Equiv.setValue
+      rw [Equiv.trans_apply, Equiv.swap_apply_of_ne_of_ne hab hsym]
+      exact he1
+    exact ⟨Equiv.setValue e1 b 4, hea', Equiv.setValue_eq e1 b 4⟩
+  let ψ : (⊤ : SimpleGraph (Fin 5)).deleteEdges {s(a, b)} ≃g
+      (⊤ : SimpleGraph (Fin 5)).deleteEdges {s(3, 4)} :=
+    { __ := e
+      map_rel_iff' := by
+        intro u v
+        simp only [deleteEdges_adj, top_adj, Set.mem_singleton_iff]
+        constructor
+        · rintro ⟨hne, hnot⟩
+          constructor
+          · exact e.injective.ne_iff.mp hne
+          · intro hs
+            apply hnot
+            rcases (Sym2.eq_iff).mp hs with ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩
+            · rw [hea, heb]
+            · rw [heb, hea]
+              exact Sym2.eq_swap
+        · rintro ⟨hne, hnot⟩
+          constructor
+          · exact e.injective.ne hne
+          · intro hs
+            apply hnot
+            rcases (Sym2.eq_iff).mp hs with ⟨hu, hv⟩ | ⟨hu, hv⟩
+            · have hu' : u = a := e.injective (hu.trans hea.symm)
+              have hv' : v = b := e.injective (hv.trans heb.symm)
+              rw [hu', hv']
+            · have hu' : u = b := e.injective (hu.trans heb.symm)
+              have hv' : v = a := e.injective (hv.trans hea.symm)
+              rw [hu', hv']
+              exact Sym2.eq_swap }
+  exact not_unitDistance_le_three_of_hasDimension_four hdim le_rfl
+    (unitDistance_of_embedding (Iso.comp ψ φ).toEmbedding
+      completeGraph_five_deleteEdge_unitDistance)
+
+/-- Six vertices, dimension four, nine edges and no isolated vertex force `K₃,₃`.
+
+Blueprint node `lem:six-vertices`. Minimum degree three makes the complement two-regular, hence
+`C₆` or `K₃ ⊔ K₃`. The complement of `C₆` is representable in `ℝ²`, which contradicts dimension
+four, and the complement of `K₃ ⊔ K₃` is `K₃,₃`. -/
+theorem iso_completeBipartiteGraph_three_three_of_hasDimension_four_fin_six
+    {G : SimpleGraph (Fin 6)}
+    (hdim : HasDimension G 4) (hEdges : G.edgeSet.ncard = 9)
+    (hnbr : ∀ v : Fin 6, ∃ w : Fin 6, G.Adj v w) :
+    Nonempty (G ≃g completeBipartiteGraph (Fin 3) (Fin 3)) := by
+  classical
+  have hcard : G.edgeFinset.card = 9 :=
+    (Set.ncard_eq_toFinset_card' G.edgeSet).symm.trans hEdges
+  have hmin : ∀ v, 3 ≤ G.degree v :=
+    degree_ge_three_of_hasDimension_four_nine_edges hdim hEdges hnbr
+  rcases nine_edges_six_minDegree_three hcard hmin with hK | hC
+  · exact hK
+  · obtain ⟨e⟩ := hC
+    let ψ : G ≃g (cycleGraph 6)ᶜ :=
+      { toEquiv := e.toEquiv
+        map_rel_iff' := by
+          intro u v
+          simp only [RelIso.coe_fn_toEquiv]
+          rw [compl_adj, e.map_adj_iff, (EquivLike.injective e).ne_iff]
+          constructor
+          · intro h
+            rcases h with ⟨hne, hn⟩
+            exact if hadj : G.Adj u v then hadj else
+              absurd ((compl_adj G u v).mpr ⟨hne, hadj⟩) hn
+          · intro hadj
+            exact ⟨hadj.ne, fun hcompl => ((compl_adj G u v).mp hcompl).2 hadj⟩ }
+    exact False.elim (not_unitDistance_le_three_of_hasDimension_four hdim
+      (by decide : (2 : ℕ) ≤ 3)
+      (unitDistance_of_embedding ψ.toEmbedding compl_cycleGraph_six_unitDistance))
+
+/-- `K₃,₃` has dimension four.
+
+Blueprint node `lem:k33-dim`. With `r = 1/√2` the two parts sit on disjoint coordinate axes in
+`ℝ⁴`, and three unit spheres in `ℝ³` cannot carry the opposite part. -/
+theorem hasDimension_completeBipartiteGraph_three_three :
+    HasDimension (completeBipartiteGraph (Fin 3) (Fin 3)) 4 := by
+  refine ⟨?_, ?_⟩
+  · obtain ⟨f, hfInj, hfDist⟩ := completeBipartiteGraph_three_three_unitDistance
+    exact ⟨f, hfInj, hfDist⟩
+  · rw [mem_lowerBounds]
+    intro m hm
+    have hmle : ¬ m ≤ 3 := fun hle =>
+      not_exists_completeBipartiteGraph_three_three_unitDistance_three
+        (unitDistance_of_fin_le hle hm)
+    exact Nat.succ_le_of_lt (Nat.gt_of_not_le hmle)
+
 /-- `K₃,₃` has dimension four, nine edges, and no isolated vertex, so the extremal claim is not
 vacuous. Half of the source paper's content. -/
 theorem DimensionFourExtremal.witness.proof : DimensionFourExtremal.witness := by
@@ -133,25 +273,20 @@ theorem DimensionFourExtremal.witness.proof : DimensionFourExtremal.witness := b
     have hw : φ (e.symm w) = w :=
       (Iso.map_apply e K (e.symm w)).trans (e.apply_symm_apply w)
     exact (φ.map_adj_iff).mp (hu.symm ▸ hw.symm ▸ hadj)
+  have hKdim : HasDimension K 4 := hasDimension_completeBipartiteGraph_three_three
   refine ⟨6, G, ?_, ?_, ?_⟩
-  · -- Representable in `ℝ⁴`, and in no `ℝᵐ` with `m ≤ 3`.
+  · -- Carry dimension four from `K` along `e`.
     refine ⟨?_, ?_⟩
-    · obtain ⟨f, hfInj, hfDist⟩ := completeBipartiteGraph_three_three_unitDistance
+    · obtain ⟨f, hfInj, hfDist⟩ := hKdim.1
       refine ⟨fun x => f (e.symm x), hfInj.comp e.symm.injective, ?_⟩
       intro u v huv
       exact hfDist (e.symm u) (e.symm v) (hpull huv)
     · rw [mem_lowerBounds]
       intro m hm
       obtain ⟨g, hgInj, hgDist⟩ := hm
-      have hKm :
-          ∃ f : Fin 3 ⊕ Fin 3 → EuclideanSpace ℝ (Fin m),
-            Function.Injective f ∧ ∀ u v, K.Adj u v → dist (f u) (f v) = 1 :=
+      exact (mem_lowerBounds.mp hKdim.2) m
         ⟨fun x => g (e x), hgInj.comp e.injective,
           fun u v huv => hgDist (e u) (e v) (htransport huv)⟩
-      have hmle : ¬ m ≤ 3 := fun hle =>
-        not_exists_completeBipartiteGraph_three_three_unitDistance_three
-          (unitDistance_of_fin_le hle hKm)
-      exact Nat.succ_le_of_lt (Nat.gt_of_not_le hmle)
   · -- Nine edges: `K₃,₃` has `3 * 3` of them, and `φ` preserves the count.
     have hK : K.edgeSet.ncard = 9 := by
       rw [← ENat.natCast_inj, Set.coe_ncard_eq_encard K.edgeSet,
@@ -170,99 +305,20 @@ theorem DimensionFourExtremal.witness.proof : DimensionFourExtremal.witness := b
 /-- **The target.** Chaffee–Noble, Australas. J. Combin. 64(2) (2016), Theorem 7. -/
 theorem DimensionFourExtremal.proof : DimensionFourExtremal := by
   intro n G hdim hEdges hnbr
-  -- Degree `0` has no neighbour. Degree `1` or `2` places the graph in `ℝ³`.
   let : DecidableRel G.Adj := Classical.decRel G.Adj
   have hcard : G.edgeFinset.card = 9 :=
     (Set.ncard_eq_toFinset_card' G.edgeSet).symm.trans hEdges
-  have noLow {m : ℕ} (hm : m ≤ 3)
-      (hrep : ∃ f : Fin n → EuclideanSpace ℝ (Fin m), Function.Injective f ∧
-        ∀ u v, G.Adj u v → dist (f u) (f v) = 1) : False := by
-    obtain ⟨g, hgInj, hgDist⟩ := unitDistance_of_fin_le hm hrep
-    have h3 : UnitDistanceEmbeddable G 3 := ⟨g, hgInj, hgDist⟩
-    have hle : (4 : ℕ) ≤ 3 := (mem_lowerBounds.mp hdim.2) 3 h3
-    exact absurd hle (by decide : ¬ (4 : ℕ) ≤ 3)
-  have hmin : ∀ v, 3 ≤ G.degree v := by
-    intro v
-    have hpos : 0 < G.degree v := (G.degree_pos_iff_exists_adj v).mpr (hnbr v)
-    rcases Nat.lt_or_ge (G.degree v) 3 with hlt | hge
-    · have hle : G.degree v ≤ 2 := Nat.lt_succ_iff.mp hlt
-      exact False.elim (noLow le_rfl
-        (unitDistance_of_nine_edges_degree_le_two hcard hle hpos))
-    · exact hge
-  -- Nine edges and minimum degree three force five or six vertices.
+  have hmin : ∀ v, 3 ≤ G.degree v :=
+    degree_ge_three_of_hasDimension_four_nine_edges hdim hEdges hnbr
   have hfive : 5 ≤ n := by
     simpa [Fintype.card_fin] using nine_edges_card_ge_five hcard
   have hsix : n ≤ 6 := by
     simpa [Fintype.card_fin] using nine_edges_minDegree_three_card_le_six hcard hmin
   have hn : n = 5 ∨ n = 6 := by omega
   rcases hn with rfl | rfl
-  · -- Five vertices: `K₅` minus one edge, carried onto `s(3, 4)` and placed in `ℝ³`.
-    obtain ⟨a, b, hab, ⟨φ⟩⟩ := nine_edges_degree_ge_three_iso_deleteEdge hcard hmin
-    obtain ⟨e, hea, heb⟩ : ∃ e : Fin 5 ≃ Fin 5, e a = 3 ∧ e b = 4 := by
-      let e1 : Fin 5 ≃ Fin 5 := Equiv.setValue (Equiv.refl (Fin 5)) a 3
-      have he1 : e1 a = 3 := Equiv.setValue_eq (Equiv.refl (Fin 5)) a 3
-      have hsym : a ≠ e1.symm (4 : Fin 5) := by
-        intro hps
-        have : e1 a = 4 := by
-          rw [hps]
-          exact e1.apply_symm_apply 4
-        rw [he1] at this
-        exact absurd this (by decide : (3 : Fin 5) ≠ 4)
-      have hea' : Equiv.setValue e1 b 4 a = 3 := by
-        unfold Equiv.setValue
-        rw [Equiv.trans_apply, Equiv.swap_apply_of_ne_of_ne hab hsym]
-        exact he1
-      exact ⟨Equiv.setValue e1 b 4, hea', Equiv.setValue_eq e1 b 4⟩
-    let ψ : (⊤ : SimpleGraph (Fin 5)).deleteEdges {s(a, b)} ≃g
-        (⊤ : SimpleGraph (Fin 5)).deleteEdges {s(3, 4)} :=
-      { __ := e
-        map_rel_iff' := by
-          intro u v
-          simp only [deleteEdges_adj, top_adj, Set.mem_singleton_iff]
-          constructor
-          · rintro ⟨hne, hnot⟩
-            constructor
-            · exact e.injective.ne_iff.mp hne
-            · intro hs
-              apply hnot
-              rcases (Sym2.eq_iff).mp hs with ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩
-              · rw [hea, heb]
-              · rw [heb, hea]
-                exact Sym2.eq_swap
-          · rintro ⟨hne, hnot⟩
-            constructor
-            · exact e.injective.ne hne
-            · intro hs
-              apply hnot
-              rcases (Sym2.eq_iff).mp hs with ⟨hu, hv⟩ | ⟨hu, hv⟩
-              · have hu' : u = a := e.injective (hu.trans hea.symm)
-                have hv' : v = b := e.injective (hv.trans heb.symm)
-                rw [hu', hv']
-              · have hu' : u = b := e.injective (hu.trans heb.symm)
-                have hv' : v = a := e.injective (hv.trans hea.symm)
-                rw [hu', hv']
-                exact Sym2.eq_swap }
-    exact False.elim (noLow le_rfl (unitDistance_of_embedding (Iso.comp ψ φ).toEmbedding
-      completeGraph_five_deleteEdge_unitDistance))
-  · -- Six vertices: `K₃,₃`, or the complement of `C₆`, which places in `ℝ²`.
-    rcases nine_edges_six_minDegree_three hcard hmin with hK | hC
-    · exact hK
-    · obtain ⟨e⟩ := hC
-      let ψ : G ≃g (cycleGraph 6)ᶜ :=
-        { toEquiv := e.toEquiv
-          map_rel_iff' := by
-            intro u v
-            simp only [RelIso.coe_fn_toEquiv]
-            rw [compl_adj, e.map_adj_iff, (EquivLike.injective e).ne_iff]
-            constructor
-            · intro h
-              rcases h with ⟨hne, hn⟩
-              exact if hadj : G.Adj u v then hadj else
-                absurd ((compl_adj G u v).mpr ⟨hne, hadj⟩) hn
-            · intro hadj
-              exact ⟨hadj.ne, fun hcompl => ((compl_adj G u v).mp hcompl).2 hadj⟩ }
-      exact False.elim (noLow (by decide : (2 : ℕ) ≤ 3)
-        (unitDistance_of_embedding ψ.toEmbedding compl_cycleGraph_six_unitDistance))
+  · exact False.elim (not_hasDimension_four_nine_edges_fin_five hdim hEdges)
+  · exact iso_completeBipartiteGraph_three_three_of_hasDimension_four_fin_six
+      hdim hEdges hnbr
 
 /-- `K₃,₃` has nine edges. -/
 theorem completeBipartiteGraph_three_three_edgeSet_ncard :
@@ -274,7 +330,7 @@ theorem completeBipartiteGraph_three_three_edgeSet_ncard :
   rw [← Nat.cast_mul]
 
 /-- Nine disjoint edges on `Fin 18` have nine edges and no isolated vertex, and are not `K₃,₃`. -/
-theorem DimensionFourExtremal.drop_2.proof : DimensionFourExtremal.drop_2 := by
+theorem DimensionFourExtremal.drop2.proof : DimensionFourExtremal.drop2 := by
   intro hyp
   let P : SimpleGraph (Fin 9 × Fin 2) := {
     Adj := fun u v => u.1 = v.1 ∧ u.2 ≠ v.2
@@ -327,7 +383,7 @@ theorem DimensionFourExtremal.drop_2.proof : DimensionFourExtremal.drop_2 := by
   exact hnot (hyp 18 G hG hnbr)
 
 /-- `K₃,₃` plus one edge inside a part has dimension four, no isolated vertex, and ten edges. -/
-theorem DimensionFourExtremal.drop_3.proof : DimensionFourExtremal.drop_3 := by
+theorem DimensionFourExtremal.drop3.proof : DimensionFourExtremal.drop3 := by
   intro hyp
   let e : Fin 3 ⊕ Fin 3 ≃ Fin 6 := finSumFinEquiv
   let K : SimpleGraph (Fin 3 ⊕ Fin 3) := completeBipartiteGraph (Fin 3) (Fin 3)
@@ -361,7 +417,7 @@ theorem DimensionFourExtremal.drop_3.proof : DimensionFourExtremal.drop_3 := by
   have hdim : HasDimension G 4 := by
     refine ⟨?_, ?_⟩
     · obtain ⟨f, hfInj, hfCross, hfLeft⟩ :=
-        completeBipartiteGraph_three_three_unitDistance_withLeft
+        completeBipartiteGraph_three_three_unitDistance_with_left
       refine ⟨fun x => f (e.symm x), hfInj.comp e.symm.injective, ?_⟩
       intro u v huv
       have hHu : H.Adj (e.symm u) (e.symm v) := hpull huv
@@ -404,7 +460,7 @@ theorem DimensionFourExtremal.drop_3.proof : DimensionFourExtremal.drop_3 := by
   exact hnot (hyp 6 G hdim hnbr)
 
 /-- `K₃,₃` plus an isolated vertex has dimension four and nine edges, and is not `K₃,₃`. -/
-theorem DimensionFourExtremal.drop_4.proof : DimensionFourExtremal.drop_4 := by
+theorem DimensionFourExtremal.drop4.proof : DimensionFourExtremal.drop4 := by
   intro hyp
   let e : Fin 3 ⊕ Fin 3 ≃ Fin 6 := finSumFinEquiv
   let K : SimpleGraph (Fin 3 ⊕ Fin 3) := completeBipartiteGraph (Fin 3) (Fin 3)

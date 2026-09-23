@@ -12,14 +12,18 @@ public import Mathlib.Combinatorics.SimpleGraph.Maps
 
 import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 import Mathlib.Combinatorics.SimpleGraph.Operations
+import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Nat.Choose.Basic
 
 /-!
 # Nine edges on five vertices
 
-A simple graph on five vertices with nine edges and minimum degree three is the complete graph
-with one edge deleted. The degree sum is eighteen, so the degrees are three `4`s and two `3`s.
-A vertex of degree four is adjacent to every other vertex, so the complement is the single edge
-joining the two vertices of degree three.
+A simple graph on five vertices with nine edges is the complete graph with one edge deleted.
+Nine edges force every degree to be at least three: a vertex of degree at most two leaves at
+most six edges on the other four vertices, and six plus two is eight. The degree sum is then
+eighteen, so the degrees are three `4`s and two `3`s. A vertex of degree four is adjacent to
+every other vertex, so the complement is the single edge joining the two vertices of degree
+three.
 
 ## Source
 
@@ -64,6 +68,36 @@ private lemma card_degree_eq_three {G : SimpleGraph (Fin 5)} [DecidableRel G.Adj
   have hnum : #s * 3 + (5 - #s) * 4 = 18 := by rw [← hc, ← hsum, htot]
   have hle : #s ≤ 5 := by simpa [card_univ, Fintype.card_fin] using s.card_le_univ
   omega
+
+/-- Nine edges on `Fin 5` force every degree to be at least three. A vertex of degree at most
+two meets at most two edges, and the other four vertices span at most `Nat.choose 4 2 = 6`
+edges, so the graph would have at most eight edges. -/
+private lemma degree_ge_three_of_nine_edges {G : SimpleGraph (Fin 5)} [DecidableRel G.Adj]
+    (hE : G.edgeFinset.card = 9) (v : Fin 5) : 3 ≤ G.degree v := by
+  rcases Nat.lt_or_ge (G.degree v) 3 with hlt | hge
+  · have hdeg : G.degree v ≤ 2 := Nat.lt_succ_iff.mp hlt
+    have hcard4 : Fintype.card {w : Fin 5 // w ≠ v} = 4 := by
+      rw [Fintype.card_subtype_compl (fun w => w = v), Fintype.card_subtype_eq,
+        Fintype.card_fin]
+    have hrest : (G.induce {w | w ≠ v}).edgeFinset.card ≤ 6 := by
+      calc
+        (G.induce {w | w ≠ v}).edgeFinset.card
+            ≤ (Fintype.card {w : Fin 5 // w ≠ v}).choose 2 :=
+          (G.induce {w | w ≠ v}).card_edgeFinset_le_card_choose_two
+        _ = Nat.choose 4 2 := by rw [hcard4]
+        _ = 6 := by decide
+    have hrestEq : (G.induce {w | w ≠ v}).edgeFinset.card =
+        G.edgeFinset.card - G.degree v := by
+      rw [← G.card_edgeFinset_deleteIncidenceSet v,
+        ← G.card_edgeFinset_induce_compl_singleton v]
+      rfl
+    have hdegCard : G.degree v ≤ G.edgeFinset.card := G.degree_le_card_edgeFinset v
+    have hle : G.edgeFinset.card ≤ 8 := by
+      have hsum : G.edgeFinset.card =
+          (G.induce {w | w ≠ v}).edgeFinset.card + G.degree v := by omega
+      omega
+    omega
+  · exact hge
 
 /-- The complement is the edge joining the two vertices of degree three. -/
 private lemma compl_eq_edge {G : SimpleGraph (Fin 5)} [DecidableRel G.Adj]
@@ -146,18 +180,20 @@ private lemma compl_eq_edge {G : SimpleGraph (Fin 5)} [DecidableRel G.Adj]
 
 @[expose] public section
 
-/-- A simple graph on five vertices with nine edges and minimum degree three is the complete
-graph with one edge deleted. The degree sum is eighteen, so the degrees are three `4`s and two
-`3`s; each degree-`4` vertex is adjacent to every other vertex, and the complement is the edge
-joining the two degree-`3` vertices.
+/-- A simple graph on five vertices with nine edges is the complete graph with one edge deleted.
+
+Nine edges force every degree to be at least three. The degree sum is then eighteen, so the
+degrees are three `4`s and two `3`s; each degree-`4` vertex is adjacent to every other vertex,
+and the complement is the edge joining the two degree-`3` vertices.
 
 Chaffee and Noble assert that the degree sequence `(4, 4, 4, 3, 3)` corresponds solely to this
 graph, in the proof of their Theorem 7. -/
-theorem nine_edges_degree_ge_three_iso_deleteEdge
+theorem nine_edges_iso_deleteEdge
     {G : SimpleGraph (Fin 5)} [DecidableRel G.Adj]
-    (hE : G.edgeFinset.card = 9) (hdeg : ∀ v, 3 ≤ G.degree v) :
+    (hE : G.edgeFinset.card = 9) :
     ∃ a b : Fin 5, a ≠ b ∧
       Nonempty (G ≃g (⊤ : SimpleGraph (Fin 5)).deleteEdges {s(a, b)}) := by
+  have hdeg : ∀ v, 3 ≤ G.degree v := fun v => degree_ge_three_of_nine_edges hE v
   obtain ⟨a, b, hab, hcompl⟩ := compl_eq_edge hE hdeg
   have hG : G = (⊤ : SimpleGraph (Fin 5)).deleteEdges {s(a, b)} := by
     rw [← compl_compl G, hcompl]

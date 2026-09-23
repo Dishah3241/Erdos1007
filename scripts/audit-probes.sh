@@ -163,7 +163,7 @@ probe "fidelity-rejects-trivial-witness" "ProbeClaimTrivialWitness.witness" \
   bash -c 'lake build 2>/dev/null; lake exe fidelity'
 
 # A drop companion whose body is not the negation of the claim with that hypothesis removed
-# must be rejected by name. The hypothesis is anonymous, so the companion is `drop_0`.
+# must be rejected by name. The hypothesis is anonymous, so the companion is `drop0`.
 setup_scratch
 mkdir -p "$SCRATCH/tree/$PROJECT/Standalone/Mathlib"
 cat > "$SCRATCH/tree/$PROJECT/Standalone/Mathlib/Probe.lean" <<LEAN
@@ -172,11 +172,11 @@ public section
 namespace $PROJECT.Standalone.Mathlib
 def ProbeDropWrong : Prop := ∀ (_ : (0 : Nat) = 0), (1 : Nat) = 1
 def ProbeDropWrong.witness : Prop := ProbeDropWrong ∨ True
-def ProbeDropWrong.drop_0 : Prop := True
+def ProbeDropWrong.drop0 : Prop := True
 end $PROJECT.Standalone.Mathlib
 end
 LEAN
-probe "fidelity-rejects-wrong-drop" "ProbeDropWrong.drop_0" \
+probe "fidelity-rejects-wrong-drop" "ProbeDropWrong.drop0" \
   bash -c 'lake build 2>/dev/null; lake exe fidelity'
 
 # A non-dependent hypothesis with no drop companion must be rejected by the hypothesis's tag.
