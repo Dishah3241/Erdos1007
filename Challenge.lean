@@ -67,8 +67,9 @@ at `3` instead satisfies the stricter reading too. Non-existence of a strict pla
 stronger and harder claim, and it is not what separating the definitions requires. -/
 def UnitDistanceEmbeddable.separating : Prop :=
   ∃ (V : Type) (G : SimpleGraph V) (n : ℕ) (f : V → EuclideanSpace ℝ (Fin n)),
-    Function.Injective f ∧ (∀ u v : V, G.Adj u v → dist (f u) (f v) = 1) ∧
-      ∃ u v : V, u ≠ v ∧ ¬ G.Adj u v ∧ dist (f u) (f v) = 1
+    UnitDistanceEmbeddable G n ∧
+      Function.Injective f ∧ (∀ u v : V, G.Adj u v → dist (f u) (f v) = 1) ∧
+        ∃ u v : V, u ≠ v ∧ ¬ G.Adj u v ∧ dist (f u) (f v) = 1
 
 /-- `G` has dimension `n`: the least `m` admitting a unit-distance representation of `G` in `ℝᵐ`.
 
