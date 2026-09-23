@@ -40,8 +40,6 @@ universe u
 
 open SimpleGraph Metric
 
-set_option linter.unusedDecidableInType false
-
 /-- The vertex set `V \ {u}` has one fewer element than `V`. -/
 private lemma card_subtype_ne {V : Type*} [Fintype V] [DecidableEq V] (u : V) :
     Fintype.card {v : V // v ≠ u} = Fintype.card V - 1 := by
@@ -56,9 +54,10 @@ private lemma card_edgeFinset_induce_ne {V : Type*} [Fintype V] [DecidableEq V]
   rfl
 
 /-- A bijection `V ≃ Fin 5` sending a chosen ordered pair to `(3, 4)`. -/
-private lemma exists_equiv_sending_pair {V : Type*} [Fintype V] [DecidableEq V]
+private lemma exists_equiv_sending_pair {V : Type*} [Fintype V]
     (hcard : Fintype.card V = 5) {p q : V} (hpq : p ≠ q) :
     ∃ e : V ≃ Fin 5, e p = 3 ∧ e q = 4 := by
+  classical
   let e0 : V ≃ Fin 5 := Fintype.equivFinOfCardEq hcard
   let e1 : V ≃ Fin 5 := Equiv.setValue e0 p 3
   have he1 : e1 p = 3 := Equiv.setValue_eq e0 p 3
@@ -78,11 +77,12 @@ private lemma exists_equiv_sending_pair {V : Type*} [Fintype V] [DecidableEq V]
   exact ⟨e2, he2p, he2q⟩
 
 /-- Four vertices of minimum degree three form `K₄`, which embeds in `K₅ − e`. -/
-private lemma unitDistance_of_minDegree_on_four {V : Type*} [Fintype V] [DecidableEq V]
+private lemma unitDistance_of_minDegree_on_four {V : Type*} [Fintype V]
     {G : SimpleGraph V} [DecidableRel G.Adj] (hcard : Fintype.card V = 4)
     (hmin : ∀ v, 3 ≤ G.degree v) :
     ∃ f : V → EuclideanSpace ℝ (Fin 3), Function.Injective f ∧
       ∀ u v, G.Adj u v → dist (f u) (f v) = 1 := by
+  classical
   have hdeg : ∀ v, G.degree v = 3 := by
     intro v
     have hge := hmin v
@@ -242,11 +242,12 @@ private lemma exists_compl_matching_of_five {V : Type*} [Fintype V] [DecidableEq
   exact ⟨p, q, hpqAdj, r, s, hrsAdj, hfour, hes⟩
 
 /-- Five vertices of minimum degree three and at most eight edges embed in `K₅ − e`. -/
-private lemma unitDistance_of_minDegree_on_five {V : Type*} [Fintype V] [DecidableEq V]
+private lemma unitDistance_of_minDegree_on_five {V : Type*} [Fintype V]
     {G : SimpleGraph V} [DecidableRel G.Adj] (hcard : Fintype.card V = 5)
     (hmin : ∀ v, 3 ≤ G.degree v) (hedge : G.edgeFinset.card ≤ 8) :
     ∃ f : V → EuclideanSpace ℝ (Fin 3), Function.Injective f ∧
       ∀ u v, G.Adj u v → dist (f u) (f v) = 1 := by
+  classical
   obtain ⟨p, q, hpqAdj, _⟩ := exists_compl_matching_of_five hcard hmin hedge
   have hpq : p ≠ q := ((compl_adj G p q).mp hpqAdj).1
   have hnot : ¬ G.Adj p q := ((compl_adj G p q).mp hpqAdj).2
@@ -274,15 +275,16 @@ private lemma unitDistance_of_minDegree_on_five {V : Type*} [Fintype V] [Decidab
 -- two `edgeFinset` instances are not definitionally equal.
 attribute [-instance] SimpleGraph.fintypeEdgeSetSup in
 /-- Delete a vertex of degree at most two and reattach it by the inductive hypothesis. -/
-private lemma unitDistance_delete_low_degree {n : ℕ} {V : Type u} [Fintype V] [DecidableEq V]
+private lemma unitDistance_delete_low_degree {n : ℕ} {V : Type u} [Fintype V]
     {G : SimpleGraph V} [DecidableRel G.Adj] {u : V} (hu : G.degree u ≤ 2)
     (hmeas : Fintype.card V + G.edgeFinset.card ≤ n + 1) (hedge : G.edgeFinset.card ≤ 8)
-    (ih : ∀ {W : Type u} [Fintype W] [DecidableEq W] {H : SimpleGraph W} [DecidableRel H.Adj],
+    (ih : ∀ {W : Type u} [Fintype W] {H : SimpleGraph W} [DecidableRel H.Adj],
       Fintype.card W + H.edgeFinset.card ≤ n → H.edgeFinset.card ≤ 8 →
       ∃ f : W → EuclideanSpace ℝ (Fin 3), Function.Injective f ∧
         ∀ a b, H.Adj a b → dist (f a) (f b) = 1) :
     ∃ f : V → EuclideanSpace ℝ (Fin 3), Function.Injective f ∧
       ∀ a b, G.Adj a b → dist (f a) (f b) = 1 := by
+  classical
   have hdeg_le_edges : G.degree u ≤ G.edgeFinset.card := G.degree_le_card_edgeFinset u
   have hcpos : 0 < Fintype.card V := Fintype.card_pos_iff.mpr ⟨u⟩
   have glue (H : SimpleGraph {v // v ≠ u}) [DecidableRel H.Adj]
@@ -294,6 +296,7 @@ private lemma unitDistance_delete_low_degree {n : ℕ} {V : Type u} [Fintype V] 
       (hEle : H.edgeFinset.card ≤ 8) :
       ∃ f : V → EuclideanSpace ℝ (Fin 3), Function.Injective f ∧
         ∀ a b, G.Adj a b → dist (f a) (f b) = 1 := by
+    classical
     obtain ⟨f, hfInj, hfDist⟩ :=
       ih (W := {v // v ≠ u}) (H := H) hmeas' hEle
     refine unitDistance_extend_degree_le_two hu ⟨f, hfInj, ?_⟩
@@ -396,7 +399,7 @@ private lemma unitDistance_delete_low_degree {n : ℕ} {V : Type u} [Fintype V] 
 
 /-- Induction on `|V| + |E|` for graphs with at most eight edges. -/
 private lemma unitDistance_of_edgeFinset_card_le_eight_aux :
-    ∀ (n : ℕ) {V : Type u} [Fintype V] [DecidableEq V]
+    ∀ (n : ℕ) {V : Type u} [Fintype V]
       {G : SimpleGraph V} [DecidableRel G.Adj],
       Fintype.card V + G.edgeFinset.card ≤ n →
       G.edgeFinset.card ≤ 8 →
@@ -405,12 +408,12 @@ private lemma unitDistance_of_edgeFinset_card_le_eight_aux :
   intro n
   induction n with
   | zero =>
-    rintro V _ _ G _ hmeas _
+    rintro V _ G _ hmeas _
     have hcard0 : Fintype.card V = 0 := by omega
     have hEmpty : IsEmpty V := Fintype.card_eq_zero_iff.mp hcard0
     exact ⟨fun v => hEmpty.elim v, fun a _ => hEmpty.elim a, fun u _ _ => hEmpty.elim u⟩
   | succ n ih =>
-    rintro V _ _ G _ hmeas hedge
+    rintro V _ G _ hmeas hedge
     by_cases hlow : ∃ u, G.degree u ≤ 2
     · obtain ⟨u, hu⟩ := hlow
       exact unitDistance_delete_low_degree hu hmeas hedge ih
@@ -462,7 +465,7 @@ embeds in `K₅` minus the edge `s(3, 4)`, which is representable in `ℝ³`.
 
 Chaffee–Noble, Theorem 6. -/
 theorem unitDistance_of_edgeFinset_card_le_eight
-    {V : Type*} [Fintype V] [DecidableEq V]
+    {V : Type*} [Fintype V]
     {G : SimpleGraph V} [DecidableRel G.Adj]
     (h : G.edgeFinset.card ≤ 8) :
     ∃ f : V → EuclideanSpace ℝ (Fin 3), Function.Injective f ∧

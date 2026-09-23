@@ -60,16 +60,12 @@ private lemma three_mul_card_le_sum_degrees
 
 @[expose] public section
 
--- `[DecidableEq V]` belongs to the fixed statement. The inequalities do not apply it:
--- `card_edgeFinset_le_card_choose_two` obtains vertex equality from `classical`.
-set_option linter.unusedDecidableInType false
-
 /-- **At least five vertices.** A simple graph with nine edges has at least five vertices.
 
 `K₄` has six edges, and `Nat.choose 4 2 = 6`, so a simple graph on at most four vertices has at
 most six edges. Blueprint node `lem:at-least-five`. -/
 theorem nine_edges_card_ge_five
-    {V : Type*} [Fintype V] [DecidableEq V]
+    {V : Type*} [Fintype V]
     {G : SimpleGraph V} [DecidableRel G.Adj]
     (h : G.edgeFinset.card = 9) : 5 ≤ Fintype.card V := by
   by_contra hlt
@@ -84,7 +80,7 @@ The handshaking lemma gives `∑ v, G.degree v = 2 * 9 = 18`, and the degree hyp
 `3 * Fintype.card V ≤ ∑ v, G.degree v`. Blueprint node `lem:at-most-six`. Chaffee and Noble
 pass to the five-vertex and six-vertex cases without recording this comparison. -/
 theorem nine_edges_minDegree_three_card_le_six
-    {V : Type*} [Fintype V] [DecidableEq V]
+    {V : Type*} [Fintype V]
     {G : SimpleGraph V} [DecidableRel G.Adj]
     (hE : G.edgeFinset.card = 9) (hdeg : ∀ v, 3 ≤ G.degree v) :
     Fintype.card V ≤ 6 := by
