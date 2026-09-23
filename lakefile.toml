@@ -42,9 +42,13 @@ name = "Erdos1007"
 globs = ["Erdos1007.*"]
 
 # Palomar's independently compiled statement surface and its proved counterpart.
+# `leanblueprint checkdecls` imports every library root into one environment. This module
+# repeats the statement declarations, so it cannot be a root next to `Solution`.
+# The glob still builds the file.
 [[lean_lib]]
 name = "Challenge"
-roots = ["Challenge"]
+roots = []
+globs = ["Challenge"]
 
 [[lean_lib]]
 name = "Solution"

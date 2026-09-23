@@ -29,6 +29,18 @@
   $\dim(G) = n$ when $n$ is \emph{least} such that $G$ is representable in $\mathbb{R}^n$.
 \end{definition}
 
+\begin{lemma}[Raising the ambient dimension]
+  \label{lem:fin-le}
+  \lean{Erdos1007.unitDistance_of_fin_le}
+  \leanok
+  \uses{def:representable}
+  A graph representable in $\mathbb{R}^n$ is representable in $\mathbb{R}^m$ for every $m \ge n$,
+  by appending zero coordinates.
+
+  \textbf{GAP.} Chaffee--Noble use this whenever a graph already placed in a smaller space is
+  treated as representable in a larger one, without a separate statement.
+\end{lemma}
+
 \section{Imported results}
 
 Chaffee--Noble import these from Erd\H{o}s, Harary and Tutte, \emph{On the dimension of a graph},
@@ -81,6 +93,8 @@ needed here. They are obligations of this development, not givens.
 
 \begin{lemma}[Re-attaching a vertex of degree at most two]
   \label{lem:reattach}
+  \lean{Erdos1007.unitDistance_extend_degree_le_two}
+  \leanok
   \uses{def:representable, lem:monotone}
   Let $u$ be a vertex of $G$ of degree at most two, and let $G'$ be $G - u$ with an edge added
   between the two neighbours of $u$ when $u$ has two. If $G'$ is representable in $\mathbb{R}^3$
@@ -99,6 +113,8 @@ needed here. They are obligations of this development, not givens.
 
 \begin{lemma}[At most eight edges are representable in \texorpdfstring{$\mathbb{R}^3$}{R3}]
   \label{lem:eight-edges}
+  \lean{Erdos1007.unitDistance_of_edgeFinset_card_le_eight}
+  \leanok
   \uses{lem:reattach, lem:monotone, lem:kn-minus-e}
   Every finite graph with at most eight edges is representable in $\mathbb{R}^3$.
 
@@ -120,6 +136,7 @@ needed here. They are obligations of this development, not givens.
 
 \begin{lemma}[Minimum degree three]
   \label{lem:min-degree}
+  \lean{Erdos1007.unitDistance_of_nine_edges_degree_le_two}
   \uses{def:dimension, lem:eight-edges, lem:reattach}
   If $\dim(G) = 4$, $|E(G)| = 9$ and $G$ has no isolated vertex, then every vertex of $G$ has
   degree at least three.
@@ -132,17 +149,23 @@ needed here. They are obligations of this development, not givens.
   most eight edges: nine less one for degree one, and nine less two plus one for degree two. By
   Lemma~\ref{lem:eight-edges} $G'$ is representable in $\mathbb{R}^3$, so $G$ is by
   Lemma~\ref{lem:reattach}, contradicting $\dim(G) = 4$.
+  The declaration named above is that representability for degree one or two. The dimension
+  contradiction is not yet a Lean theorem.
 \end{lemma}
 
 \section{Bounding the vertex count}
 
 \begin{lemma}[At least five vertices]
   \label{lem:at-least-five}
+  \lean{Erdos1007.nine_edges_card_ge_five}
+  \leanok
   A graph with nine edges has at least five vertices, since $K_4$ has only six.
 \end{lemma}
 
 \begin{lemma}[At most six vertices]
   \label{lem:at-most-six}
+  \lean{Erdos1007.nine_edges_minDegree_three_card_le_six}
+  \leanok
   \uses{lem:min-degree}
   If every degree is at least three and $|E(G)| = 9$ then $|V(G)| \le 6$, because
   $3\lvert V(G)\rvert \le \sum_{v} \deg v = 2\lvert E(G)\rvert = 18$.
@@ -157,13 +180,14 @@ needed here. They are obligations of this development, not givens.
 
 \begin{lemma}[Five vertices is impossible]
   \label{lem:five-vertices}
+  \lean{Erdos1007.nine_edges_degree_ge_three_iso_deleteEdge}
   \uses{lem:min-degree, lem:kn-minus-e, lem:monotone}
   There is no $G$ with $\dim(G) = 4$, $|E(G)| = 9$, $|V(G)| = 5$ and no isolated vertex.
 
   Degrees lie between three and four, and the degree sum is eighteen, forcing $(4,4,4,3,3)$.
   Chaffee--Noble assert that this sequence ``corresponds solely to the graph $K_5 - e$''; that
-  uniqueness is stated without argument and must be proved here. Then
-  $\dim(K_5 - e) = 3$ contradicts $\dim(G) = 4$.
+  uniqueness is stated without argument and must be proved here. The isomorphism is the
+  declaration named above. The contradiction with $\dim(G) = 4$ is not yet a Lean theorem.
 \end{lemma}
 
 \section{The six-vertex case}
@@ -195,6 +219,7 @@ needed here. They are obligations of this development, not givens.
 
 \begin{lemma}[Six vertices forces $K_{3,3}$]
   \label{lem:six-vertices}
+  \lean{Erdos1007.nine_edges_six_minDegree_three}
   \uses{lem:min-degree, lem:two-regular-six, lem:prism-planar}
   If $\dim(G) = 4$, $|E(G)| = 9$, $|V(G)| = 6$ and $G$ has no isolated vertex, then
   $G \cong K_{3,3}$.
@@ -210,6 +235,7 @@ needed here. They are obligations of this development, not givens.
 \begin{theorem}[Chaffee--Noble, Theorem 7]
   \label{thm:target}
   \lean{Erdos1007.Standalone.Mathlib.InlineErdos1007.DimensionFourExtremal}
+  \leanok
   \uses{lem:min-degree, lem:at-least-five, lem:at-most-six, lem:five-vertices, lem:six-vertices}
   A graph of dimension four with nine edges and no isolated vertex is isomorphic to $K_{3,3}$.
 \end{theorem}
@@ -224,6 +250,7 @@ needed here. They are obligations of this development, not givens.
 \begin{theorem}[The statement is not vacuous]
   \label{thm:witness}
   \lean{Erdos1007.Standalone.Mathlib.InlineErdos1007.DimensionFourExtremal.witness}
+  \leanok
   \uses{lem:k33-dim}
   Some graph has dimension four, nine edges and no isolated vertex, namely $K_{3,3}$ by
   Lemma~\ref{lem:k33-dim}.
@@ -234,6 +261,7 @@ needed here. They are obligations of this development, not givens.
 \begin{theorem}[Representation does not constrain non-edges]
   \label{thm:sep-representable}
   \lean{Erdos1007.Standalone.Mathlib.InlineErdos1007.UnitDistanceEmbeddable.separating}
+  \leanok
   \uses{def:representable}
   Some placement satisfying Definition~\ref{def:representable} puts a non-edge at distance one:
   send an edge to $0, 1$ and a third vertex to $2$ in $\mathbb{R}^1$.
@@ -242,6 +270,7 @@ needed here. They are obligations of this development, not givens.
 \begin{theorem}[Leastness is not membership]
   \label{thm:sep-dimension}
   \lean{Erdos1007.Standalone.Mathlib.InlineErdos1007.HasDimension.separating}
+  \leanok
   \uses{def:dimension}
   Some graph with an edge is representable in $\mathbb{R}^4$ without having dimension four, namely
   $K_2$, of dimension one. The edge is required: the empty graph would satisfy this degenerately.

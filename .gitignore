@@ -1,3 +1,4 @@
 .lake/
 *.olean
 tmp/
+blueprint/lean_decls
