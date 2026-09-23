@@ -219,7 +219,6 @@ private lemma extend_unitDistance {V : Type*} {G : SimpleGraph V} {u : V}
 
 @[expose] public section
 
-set_option linter.unusedDecidableInType false in
 /-- Re-attach a vertex `u` of degree at most two to a unit-distance placement of the induced
 subgraph on `V \ {u}` (blueprint node `lem:reattach`).
 
@@ -232,7 +231,7 @@ the induced subgraph, and each edge incident to `u` meets that new point at dist
 Chaffee–Noble give the degree-two case in the argument of Theorem 6 and call the degree-one
 case obvious. -/
 theorem unitDistance_extend_degree_le_two
-    {V : Type*} [Fintype V] [DecidableEq V]
+    {V : Type*} [Fintype V]
     {G : SimpleGraph V} [DecidableRel G.Adj]
     {u : V} (hdeg : G.degree u ≤ 2) :
     (∃ f : {v : V // v ≠ u} → EuclideanSpace ℝ (Fin 3),
@@ -243,6 +242,7 @@ theorem unitDistance_extend_degree_le_two
           dist (f a) (f b) = 1) →
       ∃ g : V → EuclideanSpace ℝ (Fin 3), Function.Injective g ∧
         ∀ a b, G.Adj a b → dist (g a) (g b) = 1 := by
+  classical
   rintro ⟨f, hfInj, hfDist⟩
   have hfDist' : ∀ a b : {v : V // v ≠ u},
       (G.induce {v | v ≠ u}).Adj a b → dist (f a) (f b) = 1 :=
