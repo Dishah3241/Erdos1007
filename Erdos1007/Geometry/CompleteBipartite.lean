@@ -14,7 +14,8 @@ public import Mathlib.Combinatorics.SimpleGraph.Basic
 The upper bound in the dimension computation `dim(K₃,₃) = 4` (blueprint node `lem:k33-dim`): with
 `r = 1/√2`, place one part at `{(r, 0, 0, 0), (-r, 0, 0, 0), (0, r, 0, 0)}` and the other at
 `{(0, 0, r, 0), (0, 0, -r, 0), (0, 0, 0, r)}`. Every one of the nine cross pairs differs in
-exactly two coordinates by `±r`, so all nine cross-distances are one.
+exactly two coordinates by `±r`, so all nine cross-distances are one. The same difference puts
+`(r, 0, 0, 0)` and `(0, r, 0, 0)` at distance one.
 
 The lower bound is
 `not_exists_completeBipartiteGraph_three_three_unitDistance_three`.
@@ -50,16 +51,12 @@ private theorem sq_dist_svec {a b : ℝ} {i j : Fin 4} (h : i ≠ j) :
 
 @[expose] public section
 
-/-- **Upper bound** for the dimension of `K₃,₃`: the complete bipartite graph on `3 + 3` vertices
-admits an injective placement in `ℝ⁴` realising every edge as a unit segment (blueprint node
-`lem:k33-dim`; Chaffee–Noble Lemma 3, attributed there to Erdős–Harary–Tutte).
-
-With `r = 1/√2` the left part sits at `{(r, 0, 0, 0), (-r, 0, 0, 0), (0, r, 0, 0)}` and the right
-part at `{(0, 0, r, 0), (0, 0, -r, 0), (0, 0, 0, r)}`; the squared distance of a cross pair is
-`r² + r² = 1`. -/
-theorem completeBipartiteGraph_three_three_unitDistance :
+/-- The placement of `K₃,₃` in `ℝ⁴` realises every cross edge, and also the segment joining
+`(r, 0, 0, 0)` to `(0, r, 0, 0)`, as a unit segment. -/
+theorem completeBipartiteGraph_three_three_unitDistance_withLeft :
     ∃ f : Fin 3 ⊕ Fin 3 → EuclideanSpace ℝ (Fin 4), Function.Injective f ∧
-      ∀ u v, (completeBipartiteGraph (Fin 3) (Fin 3)).Adj u v → dist (f u) (f v) = 1 := by
+      (∀ u v, (completeBipartiteGraph (Fin 3) (Fin 3)).Adj u v → dist (f u) (f v) = 1) ∧
+      dist (f (Sum.inl 0)) (f (Sum.inl 2)) = 1 := by
   obtain ⟨r, hr2, hrpos⟩ : ∃ r : ℝ, r ^ 2 = 1 / 2 ∧ 0 < r :=
     ⟨1 / Real.sqrt 2, by rw [div_pow, one_pow, Real.sq_sqrt (by norm_num)], by positivity⟩
   have hr0 : r ≠ 0 := ne_of_gt hrpos
@@ -81,7 +78,7 @@ theorem completeBipartiteGraph_three_three_unitDistance :
     intro i j hij a b ha hb
     rw [EuclideanSpace.dist_eq, sq_dist_svec hij, ha, hb, hr2]
     norm_num
-  refine ⟨pt r, ?_, ?_⟩
+  refine ⟨pt r, ?_, ?_, ?_⟩
   · -- Injectivity: read off the axis and the sign from a placed point.
     intro u v huv
     rcases u with u | u <;> rcases v with v | v
@@ -118,6 +115,22 @@ theorem completeBipartiteGraph_three_three_unitDistance :
     · fin_cases u <;> fin_cases v <;> simp only [pt] <;>
         exact hvec_dist _ _ (by simp) _ _ (by ring) (by ring)
     · simp [completeBipartiteGraph] at huv
+  · rw [show pt r (Sum.inl 0) = svec (0 : Fin 4) r from rfl,
+        show pt r (Sum.inl 2) = svec (1 : Fin 4) r from rfl]
+    exact hvec_dist (0 : Fin 4) 1 (by decide) r r rfl rfl
+
+/-- **Upper bound** for the dimension of `K₃,₃`: the complete bipartite graph on `3 + 3` vertices
+admits an injective placement in `ℝ⁴` realising every edge as a unit segment (blueprint node
+`lem:k33-dim`; Chaffee–Noble Lemma 3, attributed there to Erdős–Harary–Tutte).
+
+With `r = 1/√2` the left part sits at `{(r, 0, 0, 0), (-r, 0, 0, 0), (0, r, 0, 0)}` and the right
+part at `{(0, 0, r, 0), (0, 0, -r, 0), (0, 0, 0, r)}`; the squared distance of a cross pair is
+`r² + r² = 1`. -/
+theorem completeBipartiteGraph_three_three_unitDistance :
+    ∃ f : Fin 3 ⊕ Fin 3 → EuclideanSpace ℝ (Fin 4), Function.Injective f ∧
+      ∀ u v, (completeBipartiteGraph (Fin 3) (Fin 3)).Adj u v → dist (f u) (f v) = 1 := by
+  obtain ⟨f, hfInj, hfDist, _⟩ := completeBipartiteGraph_three_three_unitDistance_withLeft
+  exact ⟨f, hfInj, hfDist⟩
 
 end
 

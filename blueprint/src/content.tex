@@ -52,6 +52,7 @@ needed here. They are obligations of this development, not givens.
   \lean{Erdos1007.unitDistance_comap}
   \lean{Erdos1007.unitDistance_of_le}
   \lean{Erdos1007.unitDistance_of_embedding}
+  \leanok
   If $H$ is a subgraph of $G$ then $\dim(H) \le \dim(G)$.
 
   It is used here in the more basic form it follows from: a representation of $G$ in
@@ -63,6 +64,7 @@ needed here. They are obligations of this development, not givens.
 \begin{lemma}[$\dim(K_n - e) = n - 2$; EHT via Chaffee--Noble Lemma 2]
   \label{lem:kn-minus-e}
   \lean{Erdos1007.completeGraph_five_deleteEdge_unitDistance}
+  \leanok
   Only the instance $\dim(K_5 - e) = 3$ is used, and only the upper bound $\le 3$.
   That upper bound is the declaration named above. The matching lower bound is not
   formalized.
@@ -72,6 +74,7 @@ needed here. They are obligations of this development, not givens.
   \label{lem:k33-dim}
   \lean{Erdos1007.completeBipartiteGraph_three_three_unitDistance}
   \lean{Erdos1007.not_exists_completeBipartiteGraph_three_three_unitDistance_three}
+  \leanok
   \uses{def:dimension}
   Both halves are needed and neither is quoted in Chaffee--Noble.
 
@@ -137,6 +140,7 @@ needed here. They are obligations of this development, not givens.
 \begin{lemma}[Minimum degree three]
   \label{lem:min-degree}
   \lean{Erdos1007.unitDistance_of_nine_edges_degree_le_two}
+  \leanok
   \uses{def:dimension, lem:eight-edges, lem:reattach}
   If $\dim(G) = 4$, $|E(G)| = 9$ and $G$ has no isolated vertex, then every vertex of $G$ has
   degree at least three.
@@ -181,6 +185,7 @@ needed here. They are obligations of this development, not givens.
 \begin{lemma}[Five vertices is impossible]
   \label{lem:five-vertices}
   \lean{Erdos1007.nine_edges_degree_ge_three_iso_deleteEdge}
+  \leanok
   \uses{lem:min-degree, lem:kn-minus-e, lem:monotone}
   There is no $G$ with $\dim(G) = 4$, $|E(G)| = 9$, $|V(G)| = 5$ and no isolated vertex.
 
@@ -220,6 +225,7 @@ needed here. They are obligations of this development, not givens.
 \begin{lemma}[Six vertices forces $K_{3,3}$]
   \label{lem:six-vertices}
   \lean{Erdos1007.nine_edges_six_minDegree_three}
+  \leanok
   \uses{lem:min-degree, lem:two-regular-six, lem:prism-planar}
   If $\dim(G) = 4$, $|E(G)| = 9$, $|V(G)| = 6$ and $G$ has no isolated vertex, then
   $G \cong K_{3,3}$.

@@ -46,21 +46,28 @@ automation:
   methods:
     - "AI-assisted"
   detail: >-
-    The formal statement was not authored here. It reproduces a declaration of
-    google-deepmind/formal-conjectures, which carries that project's own review, with its two
-    supporting definitions inlined so the file depends on Mathlib alone; the inlining was done by
-    Claude Opus 5 and expands a notation to its definition without other change. An adversarial
-    review of the inlined statement was run on a model of a different lineage (gpt-5.6-sol) and
-    its findings are recorded in the repository history. Candidate selection was assisted by a
-    literature-triage agent (zai/glm-5.3-flash), whose retrieval receipts are in
-    ../../docs/triage-results.md. Proof work has not begun. See AGENTS.md and
-    ../../docs/PLAYBOOK.md.
+    The formal statement reproduces a declaration of google-deepmind/formal-conjectures, which
+    carries that project's own review, with its two supporting definitions inlined so the file
+    depends on Mathlib alone. The inlining was done by Claude Opus 5 and expands a notation to
+    its definition without other change. An adversarial review of the inlined statement was run
+    on gpt-5.6-sol; its findings are in docs/red-team-2026-09-20.md. Candidate selection was
+    assisted by zai/glm-5.3-flash; retrieval receipts are in ../../docs/triage-results.md. The
+    proof of DimensionFourExtremal, its witness, and both separating examples was produced by
+    Grok 4.7 workers, with Claude Opus 5.5 recorded on the landing commit 6de7090. The three
+    hypothesis-drop companions and their counterexamples were added by Grok 4.7. See AGENTS.md
+    and ../../docs/PLAYBOOK.md.
 
 limitations: >-
-  Stage 2: the statement is frozen, Challenge.lean is generated from it, and the blueprint is
-  written, but no proof is discharged. The repository does not build. Nothing here is proved.
+  The certified statement is Chaffee–Noble Theorem 7 for dimension four: a graph of dimension
+  four with nine edges and no isolated vertex is isomorphic to K_{3,3}. The dimension-five half
+  of the same paper is not formalized. Each of the three hypotheses is necessary. The
+  counterexamples are proved: nine disjoint edges on eighteen vertices; K_{3,3} plus one edge
+  inside a part; K_{3,3} plus an isolated vertex on seven vertices. Comparator has not been run.
 
 review:
   status: "in-progress"
   note: >-
-    Statement frozen and adversarially reviewed; blueprint written; proof not started.
+    The extremal statement, its witness, both separating examples, and the three hypothesis-drop
+    counterexamples are proved in Lean. The Compass sign-off is void until the owner confirms
+    again: UnitDistanceEmbeddable.separating changed at 6de7090. Comparator is pending. Palomar,
+    the formal_proof pull request, the Mathlib pull request, and the writeup are not done.
