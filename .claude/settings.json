@@ -3,8 +3,6 @@
     "allow": [
       "Bash(lake *)",
       "Bash(~/.elan/bin/lake *)",
-      "Bash(/Users/dishant/.elan/bin/lake *)",
-      "Bash(/Users/dishant/.elan/bin/lake:*)",
       "Bash(~/.elan/bin/lake:*)",
       "Bash(lake:*)",
       "Bash(git status *)",
@@ -22,8 +20,8 @@
       "Bash(mkdir -p tmp*)",
       "Bash(rm tmp/*)",
       "Bash(rm -f tmp/*)",
-      "Read(//Users/dishant/Code/Math/AGENTS.md)",
-      "Read(//Users/dishant/Code/Math/docs/PLAYBOOK.md)"
+      "Read(~/Code/Math/AGENTS.md)",
+      "Read(~/Code/Math/docs/PLAYBOOK.md)"
     ],
     "deny": [
       "Bash(git push *)",
