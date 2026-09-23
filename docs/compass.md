@@ -4,12 +4,15 @@ The declarations whose meaning decides whether the target theorem says what it c
 owner's whole review surface under `../../docs/PLAYBOOK.md` stage 1, step 5. Everything else,
 including the whole proof interior, is checked by the kernel and the gates.
 
-All six project declarations are in `Erdos1007/Standalone/Mathlib/InlineErdos1007.lean`, namespace
-`Erdos1007.Standalone.Mathlib.InlineErdos1007`.
+The project declarations are in `Erdos1007/Standalone/Mathlib/InlineErdos1007.lean`, namespace
+`Erdos1007.Standalone.Mathlib.InlineErdos1007`. Rows 7 and 8 are Mathlib's.
 
-**Owner sign-off: provisional, 2026-09-21.** The owner agreed "for now". This unblocks Stage 3.
-The owner must confirm it again before anything lands (Stage 5), and any change to a row above
-cancels the sign-off.
+**Owner sign-off: void.** Provisional agreement on 2026-09-21 ("for now") unblocked Stage 3.
+Row 5 changed at `6de7090`: `UnitDistanceEmbeddable.separating` gained the conjunct
+`UnitDistanceEmbeddable G n`. That conjunct names the subject so the fidelity audit can see it;
+the exhibited placement already supplies an injective unit-distance map, so the conjunct does not
+add a geometric condition. Any change to a row cancels the sign-off. The owner must confirm the
+list again before anything lands.
 
 | # | Declaration | Must mean | Check |
 |---|---|---|---|
@@ -21,6 +24,9 @@ cancels the sign-off.
 | 6 | `HasDimension.separating` | some graph **with an edge** is representable in `ℝ⁴` without having dimension four | Requiring an edge rules out the empty-graph degenerate case. Red-team finding 3. |
 | 7 | Mathlib `completeBipartiteGraph (Fin 3) (Fin 3)` | `K₃,₃` on `Fin 3 ⊕ Fin 3` | This is a root-namespace declaration, not `SimpleGraph.completeBipartiteGraph`. |
 | 8 | Mathlib `G.edgeSet.ncard = 9` | exactly nine edges | `ncard` is `0` on an infinite set, but `Fin n` is finite, so this is the true count. |
+| 9 | `DimensionFourExtremal.drop_2` | without dimension four, nine edges and no isolated vertex do not force `K₃,₃` | Nine disjoint edges on `Fin 18`: nine edges, every vertex of degree one, and `18 ≠ 6`. |
+| 10 | `DimensionFourExtremal.drop_3` | without the edge count, dimension four and no isolated vertex do not force `K₃,₃` | `K₃,₃` plus the edge between `(r, 0, 0, 0)` and `(0, r, 0, 0)`, `r = 1/√2`. Dimension four, no isolated vertex, ten edges. |
+| 11 | `DimensionFourExtremal.drop_4` | without "no isolated vertex", dimension four and nine edges do not force `K₃,₃` | `K₃,₃` plus an isolated vertex, on `Fin 7`. Dimension four, nine edges, and `7 ≠ 6`. |
 
 Inherited provenance: rows 1–3 reproduce `erdos_1007.variants.dimension_four_extremal` from
 `formal-conjectures`. The adversarial review checked that they agree with it by `rfl`
