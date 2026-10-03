@@ -24,10 +24,10 @@ Soifer in 1992. It belongs to a line of work on `f(d)`, the least number of edge
 unit-distance representation in `ℝᵈ`. Since `K_{d+2}` has none, `f(d) ≤ C(d + 2, 2)`, and Frankl,
 Kupavskii and Swanepoel proved equality for every `d ≥ 4`, confirming a question of Erdős and
 Simonovits. Dimension three is the exception: `f(3) = 9 < C(5, 2)`, because `K₃,₃` has no
-representation in `ℝ³`. House's theorem makes `K₃,₃` the only such graph with nine edges, and that
-uniqueness is what this repository proves. The question belongs to discrete geometry and extremal
-graph theory, and specifically to the study of unit-distance representations and the dimension of
-graphs.
+representation in `ℝ³`. Among graphs without isolated vertices, House's theorem makes `K₃,₃` the
+only such graph with nine edges, and that uniqueness is what this repository proves. The question
+belongs to discrete geometry and extremal graph theory, and specifically to the study of
+unit-distance representations and the dimension of graphs.
 
 ## The statement
 

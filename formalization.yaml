@@ -6,7 +6,7 @@ project:
   description: >-
     A graph has dimension n when n is the least number such that its vertices can be placed
     injectively in ℝⁿ with every edge of length one (Erdős, Harary and Tutte). House proved that a
-    graph of dimension four has at least nine edges, and that nine is attained only by K_{3,3}.
+    graph of dimension four has at least nine edges, and that, among graphs without isolated vertices, nine is attained only by K_{3,3}.
     This project proves the second half in Lean 4, in the form google-deepmind/formal-conjectures
     states it as erdos_1007.variants.dimension_four_extremal: a graph of dimension four with nine
     edges and no isolated vertex is isomorphic to K_{3,3}. The proof follows Chaffee and Noble's
