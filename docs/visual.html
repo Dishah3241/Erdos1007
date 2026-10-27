@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nine edges at dimension four — Erdős 1007</title>
+<style>
+  :root {
+    --bg: #e5dfd2;
+    --sheet: #fbf8f3;
+    --ink: #1c1814;
+    --muted: #5f584e;
+    --line: #e3dcd0;
+    --green: #0e6b52;
+    --green-soft: #e6f3ee;
+    --navy: #1a4572;
+    --navy-soft: #e7eef6;
+    --rust: #9a4310;
+    --rust-soft: #f8ece3;
+    --rose: #8e2340;
+    --rose-soft: #f8e8ec;
+    --amber: #8a5a10;
+    --amber-soft: #f8efd8;
+    --shadow: 0 18px 50px rgba(60, 42, 20, 0.08);
+    --sans: "Avenir Next", "Segoe UI", sans-serif;
+    --serif: "Iowan Old Style", Palatino, "Palatino Linotype", Georgia, serif;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--serif);
+    font-size: 18px;
+    line-height: 1.5;
+  }
+  a { color: var(--navy); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  a:hover { color: var(--green); }
+  .sheet {
+    max-width: 1080px;
+    margin: 32px auto;
+    background: var(--sheet);
+    padding: 52px 60px 72px;
+    box-shadow: var(--shadow);
+  }
+  .kicker {
+    margin: 0 0 10px;
+    font-family: var(--sans);
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--green);
+  }
+  h1 {
+    margin: 0;
+    font-size: clamp(2rem, 4vw, 3.15rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.08;
+  }
+  h2 {
+    margin: 0 0 8px;
+    font-size: 1.7rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+  h3 { margin: 0 0 6px; font-size: 1.15rem; font-weight: 600; }
+  p { margin: 0; }
+  .lede { margin-top: 16px; font-size: 1.18rem; max-width: 40rem; }
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 230px;
+    gap: 28px;
+    align-items: center;
+  }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+  .chip {
+    font-family: var(--sans);
+    font-size: 0.82rem;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: var(--green-soft);
+    color: var(--green);
+  }
+  nav.toc { display: flex; flex-wrap: wrap; gap: 8px; margin: 28px 0 8px; }
+  nav.toc a {
+    font-family: var(--sans);
+    font-size: 0.82rem;
+    text-decoration: none;
+    color: var(--ink);
+    background: #f3eee6;
+    border-radius: 999px;
+    padding: 6px 12px;
+  }
+  nav.toc a:hover { background: var(--green-soft); color: var(--green); }
+  section { margin-top: 56px; }
+  .section-intro { max-width: 42rem; color: var(--ink); margin-bottom: 18px; }
+  .section-intro p + p { margin-top: 8px; }
+  .grid-3, .grid-2, .split { display: grid; gap: 18px; }
+  .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .grid-2, .split { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .card, .panel {
+    background: #f7f3ec;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 16px 16px 14px;
+    min-width: 0;
+  }
+  .card h3, .panel h3 { font-size: 1.05rem; }
+  .card p, .panel p, figcaption, .fine {
+    color: var(--muted);
+    font-size: 0.95rem;
+    line-height: 1.45;
+  }
+  .card p + p, .panel p + p { margin-top: 8px; }
+  figure { margin: 0; }
+  figcaption { margin-top: 10px; }
+  svg { display: block; width: 100%; height: auto; }
+  .lbl {
+    font-family: var(--sans);
+    font-size: 13px;
+    fill: var(--ink);
+    paint-order: stroke fill;
+    stroke: #fbf8f3;
+    stroke-width: 5px;
+    stroke-linejoin: round;
+  }
+  .panel .lbl { stroke: #f7f3ec; }
+  .formula {
+    font-family: var(--sans);
+    background: white;
+    border-radius: 12px;
+    padding: 12px 14px;
+    color: var(--ink);
+    font-size: 0.98rem;
+  }
+  .coords {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 10px 0 0;
+    padding: 0;
+    list-style: none;
+    font-family: var(--sans);
+    font-size: 0.92rem;
+  }
+  .coords li { color: var(--ink); }
+  .swatch { display: inline-block; width: 0.7em; height: 0.7em; border-radius: 50%; margin-right: 6px; vertical-align: -1px; }
+  .swatch.a { background: var(--rust); }
+  .swatch.b { background: var(--navy); }
+  .matrix-wrap { display: grid; grid-template-columns: auto 1fr; gap: 18px; align-items: center; }
+  .matrix {
+    display: grid;
+    grid-template-columns: 52px repeat(3, 64px);
+    gap: 8px;
+    align-items: center;
+    justify-items: center;
+  }
+  .mh, .mr {
+    font-family: var(--sans);
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+  .cell {
+    width: 64px;
+    height: 56px;
+    border-radius: 10px;
+    border: 1px solid #cfe3da;
+    background: var(--green-soft);
+    color: var(--green);
+    font: 600 1.15rem/1 var(--sans);
+    cursor: pointer;
+  }
+  .cell:hover, .cell:focus-visible, .cell[aria-pressed="true"] {
+    background: white;
+    border-color: var(--green);
+    outline: 2px solid var(--green);
+    outline-offset: 1px;
+  }
+  #pair-detail {
+    min-height: 3.2em;
+    margin-top: 12px;
+    font-family: var(--sans);
+    font-size: 0.95rem;
+    color: var(--ink);
+  }
+  .ladder { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+  .rung {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: baseline;
+    border-radius: 12px;
+    padding: 10px 14px;
+    font-family: var(--sans);
+    font-size: 0.95rem;
+  }
+  .rung b { font-weight: 600; }
+  .rung.yes { background: var(--green-soft); color: var(--green); }
+  .rung.no { background: var(--rose-soft); color: var(--rose); }
+  .rung.mid { background: var(--amber-soft); color: var(--amber); }
+  .spine { list-style: none; margin: 8px 0 0; padding: 0; }
+  .step { display: grid; grid-template-columns: 36px minmax(0, 1fr); gap: 14px; }
+  .rail { display: flex; flex-direction: column; align-items: center; }
+  .dot {
+    width: 14px;
+    height: 14px;
+    margin-top: 6px;
+    border-radius: 50%;
+    border: 2px solid var(--muted);
+    background: white;
+    flex: none;
+  }
+  .dot.on { background: var(--green); border-color: var(--green); }
+  .dot.run { background: var(--amber); border-color: var(--amber); }
+  .dot.wait { background: white; border-color: #b7b0a4; }
+  .stem { width: 2px; flex: 1; background: var(--line); min-height: 16px; }
+  .step:last-child .stem { background: transparent; }
+  .step-body { padding-bottom: 22px; min-width: 0; }
+  .step-body h3 { display: flex; flex-wrap: wrap; gap: 8px; align-items: baseline; }
+  .num {
+    font-family: var(--sans);
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--muted);
+  }
+  .legend { display: flex; flex-wrap: wrap; gap: 14px; margin: 0 0 18px; font-family: var(--sans); font-size: 0.82rem; color: var(--muted); }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  .legend .on { background: var(--green); }
+  .legend .run { background: var(--amber); }
+  .legend .wait { background: white; border: 2px solid #b7b0a4; }
+  .fork { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+  .tag {
+    display: inline-block;
+    font-family: var(--sans);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    border-radius: 999px;
+    padding: 3px 8px;
+    margin-bottom: 6px;
+  }
+  .tag.on { background: var(--green-soft); color: var(--green); }
+  .tag.no { background: var(--rose-soft); color: var(--rose); }
+  .tag.go { background: var(--navy-soft); color: var(--navy); }
+  details { margin-top: 10px; }
+  summary { cursor: pointer; font-family: var(--sans); font-size: 0.9rem; color: var(--navy); }
+  .coord-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-family: var(--sans); font-size: 0.9rem; }
+  .coord-table td { padding: 3px 8px 3px 0; }
+  footer {
+    margin-top: 48px;
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 0.92rem;
+  }
+  footer p + p { margin-top: 8px; }
+  .edge { fill: none; stroke: var(--green); stroke-width: 2.4; stroke-linecap: round; }
+  .edge.hot { stroke-width: 4; }
+  .non { fill: none; stroke: var(--rust); stroke-width: 2; stroke-dasharray: 5 4; stroke-linecap: round; }
+  .faint { fill: none; stroke: #c8bfb2; stroke-width: 1.5; }
+  @media (max-width: 800px) {
+    .sheet { margin: 0; padding: 28px 18px 48px; }
+    .hero, .grid-3, .grid-2, .split, .fork, .matrix-wrap { grid-template-columns: 1fr; }
+    .matrix { justify-content: start; }
+  }
+  @media print {
+    body { background: white; }
+    .sheet { box-shadow: none; margin: 0; max-width: none; padding: 24px; }
+    a { color: inherit; text-decoration: none; }
+    .hero { grid-template-columns: minmax(0, 1fr) 200px; }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid-2, .split, .fork, .matrix-wrap { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .panel svg, .card svg { max-height: 240px; width: auto; max-width: 100%; margin-inline: auto; }
+  }
+</style>
+</head>
+<body>
+<main class="sheet">
+  <header class="hero">
+    <div>
+      <p class="kicker">Erdős problem 1007 · uniqueness half</p>
+      <h1>Nine edges at dimension four means K₃,₃</h1>
+      <p class="lede">Place the vertices of a finite simple graph as distinct points so that every edge has length&nbsp;1. The dimension is the smallest Euclidean dimension in which that is possible. If the dimension is&nbsp;4, there are nine edges, and every vertex has a neighbour, the graph is K₃,₃.</p>
+      <div class="chips">
+        <span class="chip">dimension 4</span>
+        <span class="chip">nine edges</span>
+        <span class="chip">no isolated vertex</span>
+      </div>
+    </div>
+    <figure>
+      <svg viewBox="0 0 220 168" role="img" aria-labelledby="heroTitle">
+        <title id="heroTitle">K₃,₃, nine edges between two parts of three vertices</title>
+        <g class="edge">
+          <line x1="36" y1="24" x2="184" y2="24"/>
+          <line x1="36" y1="24" x2="184" y2="84"/>
+          <line x1="36" y1="24" x2="184" y2="144"/>
+          <line x1="36" y1="84" x2="184" y2="24"/>
+          <line x1="36" y1="84" x2="184" y2="84"/>
+          <line x1="36" y1="84" x2="184" y2="144"/>
+          <line x1="36" y1="144" x2="184" y2="24"/>
+          <line x1="36" y1="144" x2="184" y2="84"/>
+          <line x1="36" y1="144" x2="184" y2="144"/>
+        </g>
+        <g>
+          <circle cx="36" cy="24" r="6" fill="#9a4310"/>
+          <circle cx="36" cy="84" r="6" fill="#9a4310"/>
+          <circle cx="36" cy="144" r="6" fill="#9a4310"/>
+          <circle cx="184" cy="24" r="6" fill="#1a4572"/>
+          <circle cx="184" cy="84" r="6" fill="#1a4572"/>
+          <circle cx="184" cy="144" r="6" fill="#1a4572"/>
+        </g>
+      </svg>
+      <figcaption>K₃,₃. Every vertex on the left meets every vertex on the right, and there are no other edges.</figcaption>
+    </figure>
+  </header>
+
+  <nav class="toc" aria-label="Sections">
+    <a href="#words">The three words</a>
+    <a href="#k33">Where K₃,₃ sits</a>
+    <a href="#three">Why not three dimensions</a>
+    <a href="#prism">The prism in the plane</a>
+    <a href="#reattach">Putting a vertex back</a>
+    <a href="#argument">The argument</a>
+  </nav>
+
+  <section id="words">
+    <p class="kicker">Definitions</p>
+    <h2>The three words in the sentence</h2>
+    <p class="section-intro">Each one is doing work. Drop it, and the sentence becomes false or empty.</p>
+    <div class="grid-3">
+      <article class="card">
+        <h3>Length 1 on edges</h3>
+        <svg viewBox="0 0 280 118" role="img" aria-labelledby="repTitle">
+          <title id="repTitle">Points at 0, 1 and 2 on a line. The edge from 0 to 1 and the non-edge from 1 to 2 both have length 1.</title>
+          <line class="edge" x1="36" y1="48" x2="130" y2="48"/>
+          <line class="non" x1="130" y1="48" x2="224" y2="48"/>
+          <circle cx="36" cy="48" r="5" fill="#1c1814"/>
+          <circle cx="130" cy="48" r="5" fill="#1c1814"/>
+          <circle cx="224" cy="48" r="5" fill="#1c1814"/>
+          <text class="lbl" x="36" y="28" text-anchor="middle">0</text>
+          <text class="lbl" x="130" y="28" text-anchor="middle">1</text>
+          <text class="lbl" x="224" y="28" text-anchor="middle">2</text>
+          <text class="lbl" x="83" y="74" text-anchor="middle" fill="#0e6b52">edge</text>
+          <text class="lbl" x="177" y="74" text-anchor="middle" fill="#9a4310">non-edge</text>
+          <text class="lbl" x="83" y="96" text-anchor="middle">length 1</text>
+          <text class="lbl" x="177" y="96" text-anchor="middle">length 1</text>
+        </svg>
+        <p>A placement sends every edge to a unit segment. A non-edge may have length&nbsp;1 as well. Here the edge is 0–1, and the non-edge 1–2 is also a unit segment.</p>
+      </article>
+      <article class="card">
+        <h3>Dimension means least</h3>
+        <svg viewBox="0 0 280 118" role="img" aria-labelledby="dimTitle">
+          <title id="dimTitle">K₂ placed at distance 1 on a line, and the same two points with extra zero coordinates in ℝ⁴.</title>
+          <line class="edge" x1="28" y1="46" x2="108" y2="46"/>
+          <circle cx="28" cy="46" r="5" fill="#1c1814"/>
+          <circle cx="108" cy="46" r="5" fill="#1c1814"/>
+          <text class="lbl" x="68" y="28" text-anchor="middle">K₂ in ℝ¹</text>
+          <text class="lbl" x="68" y="74" text-anchor="middle">dimension 1</text>
+          <text class="lbl" x="150" y="36">(0)</text>
+          <text class="lbl" x="150" y="58">(1)</text>
+          <text class="lbl" x="150" y="92" font-size="12">same points in ℝ⁴:</text>
+          <text class="lbl" x="150" y="110" font-size="12">(0,0,0,0), (1,0,0,0)</text>
+        </svg>
+        <p>K₂ embeds in ℝ⁴. Its dimension is still&nbsp;1, because a smaller placement exists. Dimension&nbsp;4 asks for a graph that fits in ℝ⁴ and in no smaller Euclidean space.</p>
+      </article>
+      <article class="card">
+        <h3>Every vertex has a neighbour</h3>
+        <svg viewBox="0 0 280 130" role="img" aria-labelledby="isoTitle">
+          <title id="isoTitle">K₃,₃ with an extra isolated vertex</title>
+          <g class="edge" stroke-width="1.6">
+            <line x1="28" y1="22" x2="118" y2="22"/>
+            <line x1="28" y1="22" x2="118" y2="58"/>
+            <line x1="28" y1="22" x2="118" y2="94"/>
+            <line x1="28" y1="58" x2="118" y2="22"/>
+            <line x1="28" y1="58" x2="118" y2="58"/>
+            <line x1="28" y1="58" x2="118" y2="94"/>
+            <line x1="28" y1="94" x2="118" y2="22"/>
+            <line x1="28" y1="94" x2="118" y2="58"/>
+            <line x1="28" y1="94" x2="118" y2="94"/>
+          </g>
+          <g>
+            <circle cx="28" cy="22" r="4.5" fill="#9a4310"/>
+            <circle cx="28" cy="58" r="4.5" fill="#9a4310"/>
+            <circle cx="28" cy="94" r="4.5" fill="#9a4310"/>
+            <circle cx="118" cy="22" r="4.5" fill="#1a4572"/>
+            <circle cx="118" cy="58" r="4.5" fill="#1a4572"/>
+            <circle cx="118" cy="94" r="4.5" fill="#1a4572"/>
+            <circle cx="210" cy="58" r="5" fill="#1c1814"/>
+          </g>
+          <text class="lbl" x="210" y="86" text-anchor="middle">isolated</text>
+        </svg>
+        <p>Add an isolated vertex to K₃,₃. The dimension stays&nbsp;4 and the edge count stays nine. The graph is no longer K₃,₃, so the hypothesis is part of the theorem.</p>
+      </article>
+    </div>
+  </section>
+
+  <section id="k33">
+    <p class="kicker">The witness</p>
+    <h2>K₃,₃ has a placement in ℝ⁴</h2>
+    <div class="section-intro">
+      <p>Let r&nbsp;=&nbsp;1/√2, so r²&nbsp;=&nbsp;1/2. One part lies in the first coordinate plane, the other in the orthogonal plane. Each of the nine cross pairs differs in exactly two coordinates, by ±r, and the squared length is r²&nbsp;+&nbsp;r²&nbsp;=&nbsp;1.</p>
+    </div>
+    <div class="grid-2">
+      <figure class="panel">
+        <h3><span class="swatch a"></span>First part, in the xy-plane</h3>
+        <svg viewBox="0 0 300 230" role="img" aria-labelledby="xyTitle">
+          <title id="xyTitle">Three points (r,0), (−r,0) and (0,r) in the plane</title>
+          <line class="faint" x1="28" y1="168" x2="274" y2="168"/>
+          <line class="faint" x1="150" y1="208" x2="150" y2="28"/>
+          <polygon points="146,40 150,28 154,40" fill="#c8bfb2"/>
+          <polygon points="262,164 274,168 262,172" fill="#c8bfb2"/>
+          <circle cx="150" cy="168" r="3" fill="#c8bfb2"/>
+          <circle cx="228" cy="168" r="6" fill="#9a4310"/>
+          <circle cx="72" cy="168" r="6" fill="#9a4310"/>
+          <circle cx="150" cy="90" r="6" fill="#9a4310"/>
+          <text class="lbl" x="162" y="188">0</text>
+          <text class="lbl" x="268" y="150">x</text>
+          <text class="lbl" x="162" y="36">y</text>
+          <text class="lbl" x="228" y="192" text-anchor="middle">a₀</text>
+          <text class="lbl" x="72" y="192" text-anchor="middle">a₁</text>
+          <text class="lbl" x="166" y="78">a₂</text>
+        </svg>
+        <ul class="coords">
+          <li>a₀ = (r, 0, 0, 0)</li>
+          <li>a₁ = (−r, 0, 0, 0)</li>
+          <li>a₂ = (0, r, 0, 0)</li>
+        </ul>
+        <figcaption>Inside this part, a₀a₂ and a₁a₂ happen to have length&nbsp;1. They are not edges of K₃,₃. The segment a₀a₁ has length √2.</figcaption>
+      </figure>
+      <figure class="panel">
+        <h3><span class="swatch b"></span>Second part, in the zw-plane</h3>
+        <svg viewBox="0 0 300 230" role="img" aria-labelledby="zwTitle">
+          <title id="zwTitle">Three points (r,0), (−r,0) and (0,r) in the zw-plane</title>
+          <line class="faint" x1="28" y1="168" x2="274" y2="168"/>
+          <line class="faint" x1="150" y1="208" x2="150" y2="28"/>
+          <polygon points="146,40 150,28 154,40" fill="#c8bfb2"/>
+          <polygon points="262,164 274,168 262,172" fill="#c8bfb2"/>
+          <circle cx="150" cy="168" r="3" fill="#c8bfb2"/>
+          <circle cx="228" cy="168" r="6" fill="#1a4572"/>
+          <circle cx="72" cy="168" r="6" fill="#1a4572"/>
+          <circle cx="150" cy="90" r="6" fill="#1a4572"/>
+          <text class="lbl" x="162" y="188">0</text>
+          <text class="lbl" x="268" y="150">z</text>
+          <text class="lbl" x="162" y="36">w</text>
+          <text class="lbl" x="228" y="192" text-anchor="middle">b₀</text>
+          <text class="lbl" x="72" y="192" text-anchor="middle">b₁</text>
+          <text class="lbl" x="166" y="78">b₂</text>
+        </svg>
+        <ul class="coords">
+          <li>b₀ = (0, 0, r, 0)</li>
+          <li>b₁ = (0, 0, −r, 0)</li>
+          <li>b₂ = (0, 0, 0, r)</li>
+        </ul>
+        <figcaption>Same shape, on the other two axes. Every aᵢ meets every bⱼ, and those nine segments are the edges.</figcaption>
+      </figure>
+    </div>
+    <div class="split" style="margin-top: 18px">
+      <figure class="panel">
+        <h3>The nine edges</h3>
+        <svg viewBox="0 0 230 176" role="img" aria-labelledby="bipTitle">
+          <title id="bipTitle">The nine cross edges of K₃,₃</title>
+          <g class="edge" stroke-width="1.7">
+            <line x1="34" y1="28" x2="196" y2="28"/>
+            <line x1="34" y1="28" x2="196" y2="88"/>
+            <line x1="34" y1="28" x2="196" y2="148"/>
+            <line x1="34" y1="88" x2="196" y2="28"/>
+            <line x1="34" y1="88" x2="196" y2="88"/>
+            <line x1="34" y1="88" x2="196" y2="148"/>
+            <line x1="34" y1="148" x2="196" y2="28"/>
+            <line x1="34" y1="148" x2="196" y2="88"/>
+            <line x1="34" y1="148" x2="196" y2="148"/>
+          </g>
+          <g font-family="Avenir Next, Segoe UI, sans-serif" font-size="13">
+            <text class="lbl" x="22" y="32" text-anchor="end">a₀</text>
+            <text class="lbl" x="22" y="92" text-anchor="end">a₁</text>
+            <text class="lbl" x="22" y="152" text-anchor="end">a₂</text>
+            <text class="lbl" x="206" y="32">b₀</text>
+            <text class="lbl" x="206" y="92">b₁</text>
+            <text class="lbl" x="206" y="152">b₂</text>
+          </g>
+          <g>
+            <circle cx="34" cy="28" r="5" fill="#9a4310"/>
+            <circle cx="34" cy="88" r="5" fill="#9a4310"/>
+            <circle cx="34" cy="148" r="5" fill="#9a4310"/>
+            <circle cx="196" cy="28" r="5" fill="#1a4572"/>
+            <circle cx="196" cy="88" r="5" fill="#1a4572"/>
+            <circle cx="196" cy="148" r="5" fill="#1a4572"/>
+          </g>
+        </svg>
+        <figcaption>Select a cell to see which two coordinates carry that edge.</figcaption>
+      </figure>
+      <div class="panel">
+        <h3>Squared length of each cross pair</h3>
+        <div class="matrix" role="group" aria-label="Squared lengths of the nine edges">
+          <span></span>
+          <span class="mh">b₀</span><span class="mh">b₁</span><span class="mh">b₂</span>
+          <span class="mr">a₀</span>
+          <button type="button" class="cell" data-detail="a₀ − b₀ = (r, 0, −r, 0). Two entries ±r, squared length 1/2 + 1/2 = 1.">1</button>
+          <button type="button" class="cell" data-detail="a₀ − b₁ = (r, 0, r, 0). Two entries ±r, squared length 1/2 + 1/2 = 1.">1</button>
+          <button type="button" class="cell" data-detail="a₀ − b₂ = (r, 0, 0, −r). Two entries ±r, squared length 1/2 + 1/2 = 1.">1</button>
+          <span class="mr">a₁</span>
+          <button type="button" class="cell" data-detail="a₁ − b₀ = (−r, 0, −r, 0). Two entries ±r, squared length 1/2 + 1/2 = 1.">1</button>
+          <button type="button" class="cell" data-detail="a₁ − b₁ = (−r, 0, r, 0). Two entries ±r, squared length 1/2 + 1/2 = 1.">1</button>
+          <button type="button" class="cell" data-detail="a₁ − b₂ = (−r, 0, 0, −r). Two entries ±r, squared length 1/2 + 1/2 = 1.">1</button>
+          <span class="mr">a₂</span>
+          <button type="button" class="cell" data-detail="a₂ − b₀ = (0, r, −r, 0). Two entries ±r, squared length 1/2 + 1/2 = 1.">1</button>
+          <button type="button" class="cell" data-detail="a₂ − b₁ = (0, r, r, 0). Two entries ±r, squared length 1/2 + 1/2 = 1.">1</button>
+          <button type="button" class="cell" data-detail="a₂ − b₂ = (0, r, 0, −r). Two entries ±r, squared length 1/2 + 1/2 = 1.">1</button>
+        </div>
+        <p id="pair-detail">Each cross difference has two entries ±r and two zeros. Its squared length is 1/2 + 1/2 = 1.</p>
+      </div>
+    </div>
+    <div class="panel" style="margin-top: 18px">
+      <h3>Why the dimension is exactly four</h3>
+      <div class="ladder" aria-label="Dimensions in which K₃,₃ does and does not embed">
+        <div class="rung yes"><b>ℝ⁴</b><span>the six points above</span></div>
+        <div class="rung no"><b>ℝ³</b><span>no placement, proved below</span></div>
+        <div class="rung mid"><b>ℝ² and ℝ¹</b><span>a placement there would pad by zeros into ℝ³</span></div>
+      </div>
+      <p style="margin-top: 10px">Both the ℝ⁴ placement and the ℝ³ obstruction are already kernel-checked. Padding a placement from ℝⁿ into ℝᵐ for n&nbsp;≤&nbsp;m is the lemma a worker is writing now. Until that lemma and the packaging are in place, “dimension exactly&nbsp;4” is not yet a Lean theorem, so the witness that the statement is non-vacuous is still open.</p>
+    </div>
+  </section>
+
+  <section id="three">
+    <p class="kicker">The lower bound</p>
+    <h2>Three centres in ℝ³ have at most two common unit points</h2>
+    <p class="section-intro">Each vertex of the second part would have to lie at distance&nbsp;1 from all three vertices of the first. Three distinct points cannot do that.</p>
+    <div class="grid-2">
+      <figure class="panel">
+        <h3>Centres not on a line</h3>
+        <svg viewBox="0 0 360 210" role="img" aria-labelledby="ncTitle">
+          <title id="ncTitle">Three centres in a plane, and a line orthogonal to that plane carrying at most two unit points</title>
+          <polygon points="36,150 190,168 250,108 96,90" fill="#f3efe7" stroke="#c8bfb2" stroke-width="1.5"/>
+          <circle cx="92" cy="132" r="5" fill="#9a4310"/>
+          <circle cx="168" cy="146" r="5" fill="#9a4310"/>
+          <circle cx="150" cy="108" r="5" fill="#9a4310"/>
+          <line class="edge" x1="196" y1="78" x2="250" y2="24"/>
+          <circle cx="214" cy="60" r="5" fill="#1a4572"/>
+          <circle cx="236" cy="38" r="5" fill="#1a4572"/>
+          <text class="lbl" x="40" y="188">plane of the three centres</text>
+          <text class="lbl" x="258" y="52">at most two</text>
+          <text class="lbl" x="258" y="70">common points</text>
+        </svg>
+        <figcaption>The common points are forced onto the line through one of them orthogonal to the plane of the centres. A line meets a unit sphere in at most two points, so the opposite part has size at most&nbsp;2.</figcaption>
+      </figure>
+      <figure class="panel">
+        <h3>Centres on a line</h3>
+        <svg viewBox="0 0 360 210" role="img" aria-labelledby="colTitle">
+          <title id="colTitle">Three collinear centres and two distinct parallel bisector planes</title>
+          <line class="faint" x1="30" y1="108" x2="330" y2="108"/>
+          <circle cx="70" cy="108" r="5" fill="#9a4310"/>
+          <circle cx="180" cy="108" r="5" fill="#9a4310"/>
+          <circle cx="300" cy="108" r="5" fill="#9a4310"/>
+          <line x1="125" y1="36" x2="125" y2="180" stroke="#8e2340" stroke-width="2"/>
+          <line x1="240" y1="36" x2="240" y2="180" stroke="#8e2340" stroke-width="2"/>
+          <text class="lbl" x="70" y="132" text-anchor="middle">c₀</text>
+          <text class="lbl" x="180" y="132" text-anchor="middle">c₁</text>
+          <text class="lbl" x="300" y="132" text-anchor="middle">c₂</text>
+          <text class="lbl" x="125" y="26" text-anchor="middle" fill="#8e2340">bisector</text>
+          <text class="lbl" x="240" y="26" text-anchor="middle" fill="#8e2340">bisector</text>
+        </svg>
+        <figcaption>A point at distance&nbsp;1 from both c₀ and c₁ lies on the perpendicular bisector of c₀c₁, and likewise for c₁c₂. Those planes are perpendicular to the same line and sit at different places, so they do not meet.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section id="prism">
+    <p class="kicker">The six-vertex dead end</p>
+    <h2>The other nine-edge graph lives in the plane</h2>
+    <p class="section-intro">On six vertices, minimum degree&nbsp;3 and nine edges force the graph to be 3-regular, so the complement is 2-regular. A 2-regular graph on six vertices is a 6-cycle or two disjoint triangles. The cycle’s complement is the triangular prism, and the prism has this unit-distance drawing in ℝ².</p>
+    <div class="split">
+      <figure class="panel">
+        <h3>Every drawn segment has length 1</h3>
+        <svg id="prism-svg" viewBox="0 0 460 500" role="img" aria-labelledby="prismTitle">
+          <title id="prismTitle">Unit-distance drawing of the triangular prism in the plane</title>
+          <g id="prism-edges" fill="none" stroke="#0e6b52" stroke-width="2.6" stroke-linecap="round">
+            <line data-name="AB, a side of triangle ABE" x1="120" y1="430" x2="330" y2="430"/>
+            <line data-name="BE, a side of triangle ABE" x1="330" y1="430" x2="225" y2="248.13"/>
+            <line data-name="EA, a side of triangle ABE" x1="225" y1="248.13" x2="120" y2="430"/>
+            <line data-name="CD, a side of triangle CDF" x1="120" y1="220" x2="330" y2="220"/>
+            <line data-name="DF, a side of triangle CDF" x1="330" y1="220" x2="225" y2="38.13"/>
+            <line data-name="FC, a side of triangle CDF" x1="225" y1="38.13" x2="120" y2="220"/>
+            <line data-name="AC, one edge of the matching" x1="120" y1="430" x2="120" y2="220"/>
+            <line data-name="BD, one edge of the matching" x1="330" y1="430" x2="330" y2="220"/>
+            <line data-name="EF, one edge of the matching" x1="225" y1="248.13" x2="225" y2="38.13"/>
+          </g>
+          <g fill="#1c1814" stroke="#f7f3ec" stroke-width="2">
+            <circle cx="120" cy="430" r="5"/>
+            <circle cx="330" cy="430" r="5"/>
+            <circle cx="225" cy="248.13" r="5"/>
+            <circle cx="120" cy="220" r="5"/>
+            <circle cx="330" cy="220" r="5"/>
+            <circle cx="225" cy="38.13" r="5"/>
+          </g>
+          <g class="lbl" stroke="#f7f3ec">
+            <text x="120" y="458" text-anchor="middle">A · 0</text>
+            <text x="330" y="458" text-anchor="middle">B · 2</text>
+            <text x="252" y="272">E · 4</text>
+            <text x="96" y="224" text-anchor="end">C · 3</text>
+            <text x="354" y="224">D · 5</text>
+            <text x="225" y="24" text-anchor="middle">F · 1</text>
+          </g>
+        </svg>
+        <figcaption id="prism-readout">Triangles ABE and CDF, joined by the matching AC, BD, EF. Hover a segment. The letter is the paper’s label; the numeral is the Lean index.</figcaption>
+        <details>
+          <summary>Coordinates</summary>
+          <table class="coord-table">
+            <tr><td>A · 0</td><td>(0, 0)</td></tr>
+            <tr><td>B · 2</td><td>(1, 0)</td></tr>
+            <tr><td>C · 3</td><td>(0, 1)</td></tr>
+            <tr><td>D · 5</td><td>(1, 1)</td></tr>
+            <tr><td>E · 4</td><td>(1/2, √3/2)</td></tr>
+            <tr><td>F · 1</td><td>(1/2, 1 + √3/2)</td></tr>
+          </table>
+        </details>
+      </figure>
+      <div>
+        <figure class="panel">
+          <h3>Complement: the 6-cycle</h3>
+          <svg viewBox="0 0 250 250" role="img" aria-labelledby="cycTitle">
+            <title id="cycTitle">A 6-cycle on vertices 0 through 5</title>
+            <g fill="none" stroke="#9a4310" stroke-width="2.4" stroke-linecap="round">
+              <line x1="125" y1="36" x2="202" y2="80.5"/>
+              <line x1="202" y1="80.5" x2="202" y2="169.5"/>
+              <line x1="202" y1="169.5" x2="125" y2="214"/>
+              <line x1="125" y1="214" x2="48" y2="169.5"/>
+              <line x1="48" y1="169.5" x2="48" y2="80.5"/>
+              <line x1="48" y1="80.5" x2="125" y2="36"/>
+            </g>
+            <g fill="#1c1814">
+              <circle cx="125" cy="36" r="5"/>
+              <circle cx="202" cy="80.5" r="5"/>
+              <circle cx="202" cy="169.5" r="5"/>
+              <circle cx="125" cy="214" r="5"/>
+              <circle cx="48" cy="169.5" r="5"/>
+              <circle cx="48" cy="80.5" r="5"/>
+            </g>
+            <g class="lbl" stroke="#f7f3ec">
+              <text x="125" y="22" text-anchor="middle">0</text>
+              <text x="216" y="84">1</text>
+              <text x="216" y="174">2</text>
+              <text x="125" y="236" text-anchor="middle">3</text>
+              <text x="30" y="174" text-anchor="end">4</text>
+              <text x="30" y="84" text-anchor="end">5</text>
+            </g>
+          </svg>
+          <figcaption>On the Lean labelling the non-edges of the prism are exactly the cycle 0–1–2–3–4–5–0. This drawing shows that graph; it is not a unit-distance picture.</figcaption>
+        </figure>
+        <figure class="panel" style="margin-top: 18px">
+          <h3>The other complement: two triangles</h3>
+          <svg viewBox="0 0 360 150" role="img" aria-labelledby="twoTriTitle">
+            <title id="twoTriTitle">Two disjoint triangles, whose complement is K₃,₃</title>
+            <g fill="none" stroke="#9a4310" stroke-width="2.4" stroke-linejoin="round">
+              <polygon points="40,110 90,28 140,110"/>
+              <polygon points="210,110 260,28 310,110"/>
+            </g>
+            <g fill="#1c1814">
+              <circle cx="40" cy="110" r="4.5"/>
+              <circle cx="90" cy="28" r="4.5"/>
+              <circle cx="140" cy="110" r="4.5"/>
+              <circle cx="210" cy="110" r="4.5"/>
+              <circle cx="260" cy="28" r="4.5"/>
+              <circle cx="310" cy="110" r="4.5"/>
+            </g>
+            <text class="lbl" x="90" y="140" text-anchor="middle">one triangle</text>
+            <text class="lbl" x="260" y="140" text-anchor="middle">the other</text>
+          </svg>
+          <figcaption>The complement of two disjoint triangles on six vertices is exactly K₃,₃: every vertex of one triangle meets every vertex of the other.</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section id="reattach">
+    <p class="kicker">Re-attachment</p>
+    <h2>A vertex of degree at most two can be put back in ℝ³</h2>
+    <p class="section-intro">Delete u. When the degree is two, the hypothesis already places the two neighbours at distance&nbsp;1. The deleted graph embeds in ℝ³, and u has infinitely many legal positions, so one of them avoids the finitely many points already used.</p>
+    <div class="grid-3">
+      <article class="card">
+        <h3>Degree 0</h3>
+        <svg viewBox="0 0 220 160" role="img" aria-labelledby="d0Title">
+          <title id="d0Title">A fresh point away from a finite set</title>
+          <circle cx="48" cy="46" r="4" fill="#c8bfb2"/>
+          <circle cx="96" cy="78" r="4" fill="#c8bfb2"/>
+          <circle cx="70" cy="118" r="4" fill="#c8bfb2"/>
+          <circle cx="150" cy="96" r="4" fill="#c8bfb2"/>
+          <circle cx="168" cy="40" r="6" fill="#0e6b52"/>
+          <text class="lbl" x="168" y="64" text-anchor="middle">u</text>
+        </svg>
+        <p>Any point outside the finite image. An isolated vertex is this case; the extremal graph forbids isolates, and the lemma still includes them.</p>
+      </article>
+      <article class="card">
+        <h3>Degree 1</h3>
+        <svg viewBox="0 0 220 170" role="img" aria-labelledby="d1Title">
+          <title id="d1Title">A point on the unit sphere about its neighbour</title>
+          <circle cx="108" cy="88" r="58" fill="none" stroke="#0e6b52" stroke-width="2"/>
+          <circle cx="108" cy="88" r="5" fill="#1a4572"/>
+          <circle cx="108" cy="30" r="5" fill="#0e6b52"/>
+          <circle cx="46" cy="40" r="4" fill="#c8bfb2"/>
+          <text class="lbl" x="122" y="92">v</text>
+          <text class="lbl" x="108" y="18" text-anchor="middle">u</text>
+        </svg>
+        <p>The unit sphere about the unique neighbour. The drawing is a slice. Any unused point of the sphere realises the one edge.</p>
+      </article>
+      <article class="card">
+        <h3>Degree 2, one position</h3>
+        <svg viewBox="0 0 240 214" role="img" aria-labelledby="d2Title">
+          <title id="d2Title">An equilateral triangle: one point at distance 1 from both neighbours</title>
+          <polygon points="36,168 196,168 116,29.4" fill="none" stroke="#0e6b52" stroke-width="2.4" stroke-linejoin="round"/>
+          <circle cx="36" cy="168" r="5" fill="#1a4572"/>
+          <circle cx="196" cy="168" r="5" fill="#1a4572"/>
+          <circle cx="116" cy="29.4" r="5" fill="#0e6b52"/>
+          <text class="lbl" x="36" y="192" text-anchor="middle">v₁</text>
+          <text class="lbl" x="196" y="192" text-anchor="middle">v₂</text>
+          <text class="lbl" x="116" y="16" text-anchor="middle">u</text>
+          <text class="lbl" x="116" y="158" text-anchor="middle">1</text>
+        </svg>
+        <p>Neighbours at distance&nbsp;1. This u completes an equilateral triangle, so both new edges have length&nbsp;1. The height is √3/2.</p>
+      </article>
+    </div>
+    <figure class="panel" style="margin-top: 18px">
+      <h3>Degree 2, every position</h3>
+      <div class="split">
+        <svg viewBox="0 0 280 220" role="img" aria-labelledby="circTitle">
+          <title id="circTitle">The circle of points at distance 1 from both neighbours, viewed along the segment joining them</title>
+          <circle cx="140" cy="108" r="86" fill="none" stroke="#0e6b52" stroke-width="2.4"/>
+          <circle cx="140" cy="108" r="4" fill="#1a4572"/>
+          <circle cx="140" cy="22" r="5" fill="#0e6b52"/>
+          <circle cx="205" cy="58" r="4" fill="#c8bfb2"/>
+          <circle cx="78" cy="150" r="4" fill="#c8bfb2"/>
+          <text class="lbl" x="140" y="128" text-anchor="middle">midpoint</text>
+          <text class="lbl" x="154" y="20">u</text>
+          <text class="lbl" x="214" y="54">occupied</text>
+          <text class="lbl" x="48" y="170">occupied</text>
+        </svg>
+        <div>
+          <p class="formula">Radius √3/2. Centre = the midpoint of v₁v₂. The view looks along v₁v₂, so both neighbours project to the centre.</p>
+          <p style="margin-top: 10px">Place v₁ at (−1/2, 0, 0) and v₂ at (1/2, 0, 0). A point (0, (√3/2) cos θ, (√3/2) sin θ) is at distance&nbsp;1 from both. The two grey dots are positions already used by other vertices. The circle is infinite, so a legal θ remains.</p>
+        </div>
+      </div>
+    </figure>
+  </section>
+
+  <section id="argument">
+    <p class="kicker">The case split</p>
+    <h2>How the nine-edge graph is forced</h2>
+    <p class="section-intro">This is Theorem&nbsp;7 of Chaffee and Noble, with the steps the paper leaves unproved written in. The dots are the state of this repository on 22&nbsp;September 2026: local main is <span style="font-family: var(--sans)">1d1bd2f</span>, and three workers are still open.</p>
+    <div class="legend">
+      <span><i class="on"></i> kernel-checked on main</span>
+      <span><i class="run"></i> a worker is writing it</span>
+      <span><i class="wait"></i> still ahead</span>
+    </div>
+    <ol class="spine">
+      <li class="step">
+        <div class="rail"><span class="dot on"></span><span class="stem"></span></div>
+        <div class="step-body">
+          <h3><span class="num">1</span> Placements pass to subgraphs</h3>
+          <p>A unit-distance placement of G restricts to any subgraph, and pulls back along a graph embedding. The inequality of dimensions is not yet packaged as its own theorem.</p>
+        </div>
+      </li>
+      <li class="step">
+        <div class="rail"><span class="dot run"></span><span class="stem"></span></div>
+        <div class="step-body">
+          <h3><span class="num">2</span> Extra coordinates can be zero</h3>
+          <p>A placement in ℝⁿ appends zeros to give a placement in ℝᵐ whenever n&nbsp;≤&nbsp;m. This is what promotes “no placement in ℝ³” to “no placement below dimension&nbsp;4”.</p>
+        </div>
+      </li>
+      <li class="step">
+        <div class="rail"><span class="dot run"></span><span class="stem"></span></div>
+        <div class="step-body">
+          <h3><span class="num">3</span> Put a low-degree vertex back</h3>
+          <p>The three pictures above. Degree&nbsp;0 uses a free point, degree&nbsp;1 the unit sphere, degree&nbsp;2 the circle of radius √3/2.</p>
+        </div>
+      </li>
+      <li class="step">
+        <div class="rail"><span class="dot wait"></span><span class="stem"></span></div>
+        <div class="step-body">
+          <h3><span class="num">4</span> Eight edges fit in ℝ³</h3>
+          <p>Take a finite graph with at most eight edges that does not embed in ℝ³, with as few edges and vertices as possible. A vertex of degree at most&nbsp;2 would let step&nbsp;3 rebuild it, so every degree is at least&nbsp;3. Then 3|V|&nbsp;≤&nbsp;2|E|&nbsp;≤&nbsp;16, so there are four or five vertices, and the graph is a subgraph of K₅ minus an edge.</p>
+        </div>
+      </li>
+      <li class="step">
+        <div class="rail"><span class="dot wait"></span><span class="stem"></span></div>
+        <div class="step-body">
+          <h3><span class="num">5</span> The extremal graph has minimum degree 3</h3>
+          <p>If a vertex of a nine-edge graph has degree&nbsp;1 or&nbsp;2, the graph produced by deleting it has at most eight edges. Step&nbsp;4 places that graph in ℝ³, and step&nbsp;3 puts the vertex back, so the original graph embeds in ℝ³.</p>
+        </div>
+      </li>
+      <li class="step">
+        <div class="rail"><span class="dot wait"></span><span class="stem"></span></div>
+        <div class="step-body">
+          <h3><span class="num">6</span> Only five or six vertices remain</h3>
+          <div class="fork">
+            <figure class="panel">
+              <span class="tag no">at least five</span>
+              <svg viewBox="0 0 220 150" role="img" aria-labelledby="k4Title">
+                <title id="k4Title">K₄ drawn with six edges</title>
+                <g fill="none" stroke="#1a4572" stroke-width="2" stroke-linejoin="round">
+                  <polygon points="40,120 170,120 105,28"/>
+                  <line x1="105" y1="86" x2="40" y2="120"/>
+                  <line x1="105" y1="86" x2="170" y2="120"/>
+                  <line x1="105" y1="86" x2="105" y2="28"/>
+                </g>
+                <g fill="#1c1814">
+                  <circle cx="40" cy="120" r="4"/>
+                  <circle cx="170" cy="120" r="4"/>
+                  <circle cx="105" cy="28" r="4"/>
+                  <circle cx="105" cy="86" r="4"/>
+                </g>
+              </svg>
+              <figcaption>The complete graph on four vertices has six edges. Nine edges need a fifth vertex.</figcaption>
+            </figure>
+            <figure class="panel">
+              <span class="tag no">at most six</span>
+              <p class="formula" style="margin-top: 28px">3|V| ≤ Σ deg(v) = 2 · 9 = 18</p>
+              <p class="formula" style="margin-top: 8px">|V| ≤ 6</p>
+              <figcaption>Minimum degree&nbsp;3 supplies the left-hand inequality. Chaffee–Noble treat five and six as the only cases; this count is the reason larger graphs are gone.</figcaption>
+            </figure>
+          </div>
+        </div>
+      </li>
+      <li class="step">
+        <div class="rail"><span class="dot wait"></span><span class="stem"></span></div>
+        <div class="step-body">
+          <h3><span class="num">7</span> Five vertices is K₅ minus one edge</h3>
+          <div class="fork">
+            <svg viewBox="0 0 340 236" role="img" aria-labelledby="k5Title">
+              <title id="k5Title">K₅ drawn as a pentagon with all chords except one side</title>
+              <g fill="none" stroke="#0e6b52" stroke-width="2" stroke-linejoin="round">
+                <line x1="125" y1="36" x2="199.2" y2="90"/>
+                <line x1="170.8" y1="178.1" x2="79.2" y2="178.1"/>
+                <line x1="79.2" y1="178.1" x2="50.8" y2="90"/>
+                <line x1="50.8" y1="90" x2="125" y2="36"/>
+                <line x1="125" y1="36" x2="170.8" y2="178.1"/>
+                <line x1="125" y1="36" x2="79.2" y2="178.1"/>
+                <line x1="199.2" y1="90" x2="79.2" y2="178.1"/>
+                <line x1="199.2" y1="90" x2="50.8" y2="90"/>
+                <line x1="170.8" y1="178.1" x2="50.8" y2="90"/>
+              </g>
+              <line x1="199.2" y1="90" x2="170.8" y2="178.1" stroke="#8e2340" stroke-width="2.4" stroke-dasharray="5 4"/>
+              <g fill="#1c1814">
+                <circle cx="125" cy="36" r="4.5"/>
+                <circle cx="199.2" cy="90" r="4.5"/>
+                <circle cx="170.8" cy="178.1" r="4.5"/>
+                <circle cx="79.2" cy="178.1" r="4.5"/>
+                <circle cx="50.8" cy="90" r="4.5"/>
+              </g>
+              <text class="lbl" x="248" y="128" fill="#8e2340">the one</text>
+              <text class="lbl" x="248" y="146" fill="#8e2340">non-edge</text>
+            </svg>
+            <div>
+              <p>Five vertices determine ten possible edges. A simple graph with nine edges omits exactly one of them, so it is K₅ minus an edge. The two endpoints of the missing edge have degree&nbsp;3 and the other three vertices have degree&nbsp;4.</p>
+              <p style="margin-top: 8px">K₅ minus an edge already has a unit-distance placement in ℝ³, so this graph embeds in ℝ³. Its dimension is at most&nbsp;3.</p>
+              <p style="margin-top: 8px">The paper asserts the degree sequence (4,4,4,3,3) and gives no classification. The count of ten possible edges is the classification.</p>
+            </div>
+          </div>
+        </div>
+      </li>
+      <li class="step">
+        <div class="rail"><span class="dot wait"></span><span class="stem"></span></div>
+        <div class="step-body">
+          <h3><span class="num">8</span> Six vertices forces K₃,₃</h3>
+          <p>Degree sum 18 and minimum degree&nbsp;3 make every degree exactly&nbsp;3. The complement is 2-regular. That dichotomy is kernel-checked: a 6-cycle, or two disjoint triangles.</p>
+          <div class="fork">
+            <article class="panel">
+              <span class="tag no">dimension at most 2</span>
+              <h3>Complement is a 6-cycle</h3>
+              <p>The graph is the prism drawn above. It embeds in ℝ², so its dimension is at most&nbsp;2.</p>
+            </article>
+            <article class="panel">
+              <span class="tag go">the remaining graph</span>
+              <h3>Complement is two triangles</h3>
+              <p>Every vertex of one triangle is adjacent to every vertex of the other, and to nothing in its own triangle. That graph is K₃,₃.</p>
+            </article>
+          </div>
+        </div>
+      </li>
+      <li class="step">
+        <div class="rail"><span class="dot wait"></span><span class="stem"></span></div>
+        <div class="step-body">
+          <h3><span class="num">9</span> Assemble the theorem, and check it is not empty</h3>
+          <p>Steps 5 through 8 leave only K₃,₃. Separately, K₃,₃ itself has nine edges, no isolated vertex, and dimension&nbsp;4 once the two placements and the padding lemma are packaged. That witness is what stops the universal sentence from being vacuously true.</p>
+          <p style="margin-top: 8px">Two smaller pictures at the top of this page, the line with a unit non-edge and K₂ inside ℝ⁴, are the separating examples. A third worker is discharging those and is leaving the theorem and the witness untouched.</p>
+        </div>
+      </li>
+    </ol>
+  </section>
+
+  <footer>
+    <p>The argument is Chaffee and Noble, <i>Dimension 4 and dimension 5 graphs with minimum edge set</i>, Australas. J. Combin. 64(2) (2016), Theorem&nbsp;7, following House, Discrete Math. 313 (2013). The placements of K₃,₃ and of K₅ minus an edge are those of Erdős, Harary and Tutte, Mathematika 12 (1965), as quoted by Chaffee–Noble. The frozen Lean statement is <span style="font-family: var(--sans)">erdos_1007.variants.dimension_four_extremal</span> from <span style="font-family: var(--sans)">formal-conjectures</span>.</p>
+    <p>This page draws the argument. It is not a certificate. The Lean proof still has the theorem and the witness as <span style="font-family: var(--sans)">sorry</span>, and <span style="font-family: var(--sans)">lake build</span> of the package fails until those close.</p>
+  </footer>
+</main>
+<script>
+  const detail = document.getElementById("pair-detail");
+  const cells = document.querySelectorAll(".cell");
+  cells.forEach((cell) => {
+    const show = () => {
+      cells.forEach((other) => other.setAttribute("aria-pressed", other === cell ? "true" : "false"));
+      detail.textContent = cell.dataset.detail;
+    };
+    cell.addEventListener("pointerenter", show);
+    cell.addEventListener("focus", show);
+  });
+  const readout = document.getElementById("prism-readout");
+  const base = readout.textContent;
+  document.querySelectorAll("#prism-edges line").forEach((line) => {
+    line.addEventListener("pointerenter", () => {
+      line.classList.add("hot");
+      readout.textContent = line.dataset.name + ". Length 1.";
+    });
+    line.addEventListener("pointerleave", () => {
+      line.classList.remove("hot");
+      readout.textContent = base;
+    });
+  });
+</script>
+</body>
+</html>
